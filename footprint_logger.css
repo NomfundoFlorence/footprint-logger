@@ -1,0 +1,12 @@
+body {
+  background-color: #7d7c7c;
+  color: #fff;
+  margin: 0;
+}
+
+div {
+  background-color: #b3b3b3;
+  max-width: max-content;
+  height: 100vh;
+  justify-self: center;
+}
