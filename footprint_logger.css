@@ -4,9 +4,19 @@ body {
   margin: 0;
 }
 
-div {
+#container {
   background-color: #b3b3b3;
   max-width: max-content;
   height: 100vh;
   justify-self: center;
+}
+
+@media (min-width: 600px) {
+  #content {
+    display: flex;
+  }
+
+  #chart-container {
+    width: 50%;
+  }
 }
