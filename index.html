@@ -43,20 +43,24 @@
                 value="food-consumption" /><label for="food-consumption"
                 >Food Consumption</label
               >
-              <input type="radio" name="group" id="other" value="other" default/><label
-                for="other"
-                >Other</label
-              >
+              <input
+                type="radio"
+                name="group"
+                id="other"
+                value="other"
+                default /><label for="other">Other</label>
             </fieldset>
 
             <label for="activity">Choose activity</label>
             <select name="activity" id="activity">
               <option value="">-- select --</option>
             </select>
+
+            <button type="submit" id="submit-btn">Submit activity</button>
           </form>
         </div>
         <div id="chart-container">
-          <p id="total-emissions">Total emissions (kg): <span>0</span></p>
+          <h3 id="total-emissions"></h3>
           <canvas id="myChart"></canvas>
         </div>
       </div>

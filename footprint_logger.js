@@ -54,11 +54,7 @@ function fillActivities(category) {
         "0.9-Vegan meals",
       ];
     case "other":
-      return [
-        "1.5-Waste Management",
-        "0.2-Gardening",
-        "2-Shopping Habits",
-      ];
+      return ["1.5-Waste Management", "0.2-Gardening", "2-Shopping Habits"];
   }
 }
 
@@ -73,7 +69,6 @@ function setDefaultSelection() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const categoryRadios = document.querySelectorAll("input[name='group']");
-  const categoryActivities = document.getElementsByTagName("select");
 
   // console.log(categoryRadios);
 
@@ -109,5 +104,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // console.log(categoryActivities);
+  const submitBtn = document.getElementById("submit-btn");
+  const totalEmissions = document.getElementById("total-emissions");
+  let emissions = 0;
+
+  submitBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const selectedOption = document.querySelector(
+      "select[name='activity']"
+    ).value;
+
+    if (!selectedOption || isNaN(parseFloat(selectedOption))) {
+      alert("Please select an activity before submitting.");
+      return;
+    }
+
+    emissions += parseFloat(selectedOption);
+    totalEmissions.textContent = `Total emissions (kg): ${emissions.toFixed(
+      2
+    )}`;
+  });
 });
