@@ -27,31 +27,57 @@ function fillActivities(category) {
   switch (category) {
     case "energy-use":
       return [
-        "Electricity Consumption",
-        "Gas Consumption",
-        "Water Heating",
-        "Heating and Cooling",
+        "1.5-Electricity Consumption",
+        "2-Gas Consumption",
+        "1.8-Water Heating",
+        "0.09-Watching TV",
+        "0.1-Computer use",
+        "0.06-Lights on",
+        "0.7-Washing laundry",
+        "0.5-Dish washer",
+        "2.2-Heaters and/or Air conditioners",
+        "1-Cooking",
       ];
     case "transportation":
-      return ["Car Travel", "Public Transport", "Cycling", "Walking"];
+      return [
+        "0.21-Traveling by car",
+        "0.22-Traveling by taxi",
+        "0.05-Traveling by train",
+        "0.1-Traveling by bus",
+        "0.285-Traveling by flight",
+      ];
     case "food-consumption":
       return [
-        "Meat Consumption",
-        "Dairy Consumption",
-        "Vegetarian Meals",
-        "Vegan Meals",
+        "5-Red meat",
+        "2-Dairy products",
+        "1.5-Vegetarian meals",
+        "0.9-Vegan meals",
       ];
     case "other":
-      return ["Waste Management", "Recycling", "Gardening", "Shopping Habits"];
+      return [
+        "1.5-Waste Management",
+        "0.2-Gardening",
+        "2-Shopping Habits",
+      ];
   }
+}
+
+function setDefaultSelection() {
+  const defaultOption = document.createElement("option");
+  defaultOption.textContent = "-- select --";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+
+  return defaultOption;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const categoryRadios = document.querySelectorAll("input[name='group']");
+  const categoryActivities = document.getElementsByTagName("select");
 
-  console.log(categoryRadios);
+  // console.log(categoryRadios);
 
-  let activityId;
+  let activityId, activities;
 
   categoryRadios.forEach((radio) => {
     radio.addEventListener("change", (e) => {
@@ -62,26 +88,26 @@ document.addEventListener("DOMContentLoaded", () => {
       activityId = categoryActivities.id = e.target.value;
       activitiesLabel.for = e.target.value;
 
-      console.log(categoryActivities.id);
-      console.log(activitiesLabel.for);
-      console.log("Activity ID: ", activityId);
-
       if (activityId) {
-        const activities = fillActivities(activityId);
+        activities = fillActivities(activityId);
         categoryActivities.innerHTML = "";
-        const defaultOption = document.createElement("option");
-        defaultOption.textContent = "-- select --";
-        defaultOption.disabled = true;
-        defaultOption.selected = true;
+        const defaultOption = setDefaultSelection();
         categoryActivities.appendChild(defaultOption);
 
         activities.forEach((activity) => {
           const option = document.createElement("option");
-          option.value = activity.toLowerCase().replace(/\s+/g, "-");
-          option.textContent = activity;
+          // console.log(activity.split("-"));
+
+          option.value = activity
+            .split("-")[0]
+            .toLowerCase()
+            .replace(/\s+/g, "-");
+          option.textContent = activity.split("-")[1];
           categoryActivities.appendChild(option);
         });
       }
     });
   });
+
+  // console.log(categoryActivities);
 });
