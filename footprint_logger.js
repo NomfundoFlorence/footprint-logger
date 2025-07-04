@@ -1,27 +1,36 @@
+const categoryTotals = {
+  "energy-use": 0,
+  transportation: 0,
+  "food-consumption": 0,
+  other: 0,
+};
+
 const ctx = document.getElementById("myChart");
 
-new Chart(ctx, {
+const categoryLabels = ["Energy use", "Transportation", "Food", "Other"];
+const categoryColors = ["#4A90E2", "#E67E22", "#2E8B57", "#8E44AD"];
+
+const myChart = new Chart(ctx, {
   type: "pie",
   data: {
-    labels: ["Red", "Blue", "Yellow", "Green"],
+    labels: categoryLabels,
     datasets: [
       {
-        label: "# of Votes",
-        data: [12, 19, 3, 5],
+        label: "CO₂ Emissions by Category",
+        data: [0, 0, 0, 0],
+        backgroundColor: categoryColors,
         borderWidth: 1,
       },
     ],
   },
   options: {
-    scales: {
-      y: {
-        beginAtZero: true,
+    plugins: {
+      legend: {
+        position: "top",
       },
     },
   },
 });
-
-// linking radio selection to select dropdown
 
 function fillActivities(category) {
   switch (category) {
@@ -63,66 +72,72 @@ function setDefaultSelection() {
   defaultOption.textContent = "-- select --";
   defaultOption.disabled = true;
   defaultOption.selected = true;
-
   return defaultOption;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("chart-container").style.display = "none";
+
   const categoryRadios = document.querySelectorAll("input[name='group']");
-
-  // console.log(categoryRadios);
-
-  let activityId, activities;
-
-  categoryRadios.forEach((radio) => {
-    radio.addEventListener("change", (e) => {
-      const categoryActivities = document.getElementsByTagName("select")[0];
-      const labels = document.getElementsByTagName("label");
-      const activitiesLabel =
-        document.getElementsByTagName("label")[labels.length - 1];
-      activityId = categoryActivities.id = e.target.value;
-      activitiesLabel.for = e.target.value;
-
-      if (activityId) {
-        activities = fillActivities(activityId);
-        categoryActivities.innerHTML = "";
-        const defaultOption = setDefaultSelection();
-        categoryActivities.appendChild(defaultOption);
-
-        activities.forEach((activity) => {
-          const option = document.createElement("option");
-          // console.log(activity.split("-"));
-
-          option.value = activity
-            .split("-")[0]
-            .toLowerCase()
-            .replace(/\s+/g, "-");
-          option.textContent = activity.split("-")[1];
-          categoryActivities.appendChild(option);
-        });
-      }
-    });
-  });
-
+  const categoryActivities = document.getElementById("activity");
   const submitBtn = document.getElementById("submit-btn");
   const totalEmissions = document.getElementById("total-emissions");
   let emissions = 0;
 
+  categoryRadios.forEach((radio) => {
+    radio.addEventListener("change", (e) => {
+      const selectedCategory = e.target.value;
+      const activities = fillActivities(selectedCategory);
+
+      categoryActivities.innerHTML = "";
+      categoryActivities.appendChild(setDefaultSelection());
+
+      activities.forEach((activity) => {
+        const option = document.createElement("option");
+        const [value, label] = activity.split("-");
+        option.value = value;
+        option.textContent = label;
+        categoryActivities.appendChild(option);
+      });
+    });
+  });
+
   submitBtn.addEventListener("click", (e) => {
     e.preventDefault();
 
-    const selectedOption = document.querySelector(
-      "select[name='activity']"
-    ).value;
+    const selectedOption = categoryActivities.value;
+    const selectedCategory = document.querySelector(
+      "input[name='group']:checked"
+    );
+
+    if (!selectedCategory) {
+      alert("Please select a category.");
+      return;
+    }
 
     if (!selectedOption || isNaN(parseFloat(selectedOption))) {
       alert("Please select an activity before submitting.");
       return;
     }
 
-    emissions += parseFloat(selectedOption);
+    const value = parseFloat(selectedOption);
+    emissions += value;
     totalEmissions.textContent = `Total emissions (kg): ${emissions.toFixed(
       2
     )}`;
+
+    const categoryKey = selectedCategory.value;
+    categoryTotals[categoryKey] += value;
+
+    document.getElementById("chart-container").style.display = "block";
+
+    myChart.data.datasets[0].data = [
+      categoryTotals["energy-use"],
+      categoryTotals["transportation"],
+      categoryTotals["food-consumption"],
+      categoryTotals["other"],
+    ];
+
+    myChart.update();
   });
 });
