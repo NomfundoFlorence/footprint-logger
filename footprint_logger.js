@@ -78,21 +78,31 @@ function setDefaultSelection() {
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("chart-container").style.display = "none";
   const showVisualBtn = document.getElementById("show-visual-btn");
+  const hideVisualBtn = document.getElementById("hide-visual-btn");
+  hideVisualBtn.style.display = "none";
 
-  // Load existing data from localStorage if available
+  hideVisualBtn.addEventListener("click", () => {
+    document.getElementById("chart-container").style.display = "none";
+    showVisualBtn.style.display = "block";
+    hideVisualBtn.style.display = "none";
+
+    const totalEmissions = document.getElementById("total-emissions");
+    totalEmissions.style.display = "block";
+  });
+
   showVisualBtn.addEventListener("click", () => {
+    hideVisualBtn.style.display = "block";
+    showVisualBtn.style.display = "none";
     const savedData = localStorage.getItem("categoryTotals");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
 
-      // Update the categoryTotals object
       for (const category in parsedData) {
         if (categoryTotals.hasOwnProperty(category)) {
           categoryTotals[category] = parsedData[category];
         }
       }
 
-      // Update the chart's data
       myChart.data.datasets[0].data = [
         categoryTotals["energy-use"],
         categoryTotals["transportation"],
@@ -100,12 +110,24 @@ document.addEventListener("DOMContentLoaded", () => {
         categoryTotals["other"],
       ];
 
-      // Show chart container if any value is non-zero
       if (Object.values(categoryTotals).some((val) => val > 0)) {
         document.getElementById("chart-container").style.display = "block";
         myChart.update();
+
+        const overallFromStorage = localStorage.getItem("overallTotal");
+        const totalChartHeading = document.getElementById(
+          "total-emissions-chart"
+        );
+        if (overallFromStorage && totalChartHeading) {
+          totalChartHeading.textContent = `Total Emissions: ${parseFloat(
+            overallFromStorage
+          ).toFixed(2)} kg CO₂`;
+        }
       }
     }
+
+    const totalEmissions = document.getElementById("total-emissions");
+    totalEmissions.style.display = "none";
   });
 
   const categoryRadios = document.querySelectorAll("input[name='group']");
@@ -136,18 +158,13 @@ document.addEventListener("DOMContentLoaded", () => {
   submitBtn.addEventListener("click", (e) => {
     e.preventDefault();
 
-    const category = document.querySelector(
-      "input[name='group']:checked"
-    ).value;
-    const activityValue = document.getElementById("activity").value;
-
     const selectedOption = categoryActivities.value;
     const selectedCategory = document.querySelector(
       "input[name='group']:checked"
     );
 
     if (!selectedCategory) {
-      alert("Please select a category.");
+      alert("Please select a category and an activity before submitting.");
       return;
     }
     if (!selectedOption || isNaN(parseFloat(selectedOption))) {
@@ -155,17 +172,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const category = document.querySelector(
+      "input[name='group']:checked"
+    ).value;
+    const activityValue = document.getElementById("activity").value;
+
     if (formData.hasOwnProperty(category)) {
       formData[category] += parseFloat(activityValue);
     } else {
       formData[category] = parseFloat(activityValue);
     }
 
-    // Get existing totals from localStorage
     const existingData =
       JSON.parse(localStorage.getItem("categoryTotals")) || {};
 
-    // Merge with current formData
     for (const category in formData) {
       if (existingData.hasOwnProperty(category)) {
         existingData[category] += formData[category];
@@ -174,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Save the merged data back to localStorage
     localStorage.setItem("categoryTotals", JSON.stringify(existingData));
 
     for (let i = 0; i < localStorage.length; i++) {
@@ -187,14 +206,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const value = parseFloat(selectedOption);
     emissions += value;
-    totalEmissions.textContent = `Total emissions (kg): ${emissions.toFixed(
-      2
-    )}`;
+
+    const existingOverall =
+      parseFloat(localStorage.getItem("overallTotal")) || 0;
+    const updatedOverall = existingOverall + value;
+    localStorage.setItem("overallTotal", updatedOverall.toFixed(2));
+
+    const chartHeadingTotal = document.getElementById("total-emissions-chart");
+    if (existingOverall) {
+      totalEmissions.textContent = `Total Emissions: ${parseFloat(
+        updatedOverall.toFixed(2)
+      ).toFixed(2)} kg CO₂`;
+      chartHeadingTotal.textContent = `Total Emissions: ${updatedOverall.toFixed(
+        2
+      )} kg CO₂`;
+    }
 
     const categoryKey = selectedCategory.value;
     categoryTotals[categoryKey] += value;
-
-    document.getElementById("chart-container").style.display = "block";
 
     myChart.data.datasets[0].data = [
       categoryTotals["energy-use"],
@@ -205,6 +234,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     myChart.update();
   });
-
-  console.log("Category totals:", localStorage.getItem("categoryTotals"));
 });

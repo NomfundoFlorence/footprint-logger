@@ -6,6 +6,7 @@ body {
 
 #container {
   background-color: #b3b3b3;
+  min-width: 100%;
   max-width: max-content;
   height: 100vh;
   justify-self: center;
@@ -16,6 +17,9 @@ body {
 }
 
 @media (min-width: 600px) {
+  #container {
+    min-width: max-content;
+  }
   #content {
     display: flex;
   }
