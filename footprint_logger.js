@@ -28,7 +28,7 @@ const myChart = new Chart(ctx, {
       legend: {
         position: "left",
         labels: {
-          color: "white", // ✅ Change legend text to white
+          color: "white",
         },
       },
     },
