@@ -21,7 +21,7 @@
       <div id="content">
         <div id="form-container">
           <h1>CO<sub>2</sub> emission tracker</h1>
-          <form>
+          <form id="activity-form">
             <fieldset>
               <legend>Category</legend>
               <input
@@ -59,6 +59,7 @@
             <button type="submit" id="submit-btn">Submit activity</button>
           </form>
         </div>
+        <div id="category-running-total"></div>
         <div id="chart-container">
           <h3 id="total-emissions"></h3>
           <canvas id="myChart"></canvas>

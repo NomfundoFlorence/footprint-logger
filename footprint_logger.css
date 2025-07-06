@@ -11,6 +11,10 @@ body {
   justify-self: center;
 }
 
+#category-running-total {
+  background-color: blueviolet;
+}
+
 @media (min-width: 600px) {
   #content {
     display: flex;

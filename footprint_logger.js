@@ -102,8 +102,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const formData = {};
   submitBtn.addEventListener("click", (e) => {
     e.preventDefault();
+
+    const category = document.querySelector(
+      "input[name='group']:checked"
+    ).value;
+    const activityValue = document.getElementById("activity").value;
 
     const selectedOption = categoryActivities.value;
     const selectedCategory = document.querySelector(
@@ -114,11 +120,26 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Please select a category.");
       return;
     }
-
     if (!selectedOption || isNaN(parseFloat(selectedOption))) {
       alert("Please select an activity before submitting.");
       return;
     }
+
+    if (formData.hasOwnProperty(category)) {
+      formData[category] += parseFloat(activityValue);
+    } else {
+      formData[category] = parseFloat(activityValue);
+    }
+
+    localStorage.setItem("categoryTotals", JSON.stringify(formData));
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      console.log(`Key: ${key}, Value: ${value}`);
+    }
+
+    console.log("collected data: ", formData);
 
     const value = parseFloat(selectedOption);
     emissions += value;
