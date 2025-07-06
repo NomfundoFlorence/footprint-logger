@@ -9,10 +9,10 @@ body {
 }
 
 #container {
-  background-color: #b3b3b3;
+  background-color: #c2c2c2;
   min-width: 100%;
   max-width: max-content;
-  height: 100vh;
+  height: 100%;
   justify-self: center;
 }
 
@@ -64,14 +64,16 @@ button {
   flex-direction: column;
 }
 
-#total-emissions-chart {
-  display: flex;
-  justify-content: center;
+h3 {
   color: #0d0c0c;
 }
 
+#total-emissions-chart {
+  display: flex;
+  justify-content: center;
+}
+
 #chart-container {
-  background-color: #c2c2c2;
   padding: 0.1rem 1rem 1rem 1rem;
 }
 
@@ -91,9 +93,9 @@ canvas {
   #form-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     height: 78vh;
     padding: 1rem;
+    padding-top: 2rem;
   }
 
   #chart-container {
