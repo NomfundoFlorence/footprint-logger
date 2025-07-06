@@ -77,6 +77,36 @@ function setDefaultSelection() {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("chart-container").style.display = "none";
+  const showVisualBtn = document.getElementById("show-visual-btn");
+
+  // Load existing data from localStorage if available
+  showVisualBtn.addEventListener("click", () => {
+    const savedData = localStorage.getItem("categoryTotals");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+
+      // Update the categoryTotals object
+      for (const category in parsedData) {
+        if (categoryTotals.hasOwnProperty(category)) {
+          categoryTotals[category] = parsedData[category];
+        }
+      }
+
+      // Update the chart's data
+      myChart.data.datasets[0].data = [
+        categoryTotals["energy-use"],
+        categoryTotals["transportation"],
+        categoryTotals["food-consumption"],
+        categoryTotals["other"],
+      ];
+
+      // Show chart container if any value is non-zero
+      if (Object.values(categoryTotals).some((val) => val > 0)) {
+        document.getElementById("chart-container").style.display = "block";
+        myChart.update();
+      }
+    }
+  });
 
   const categoryRadios = document.querySelectorAll("input[name='group']");
   const categoryActivities = document.getElementById("activity");
@@ -131,7 +161,21 @@ document.addEventListener("DOMContentLoaded", () => {
       formData[category] = parseFloat(activityValue);
     }
 
-    localStorage.setItem("categoryTotals", JSON.stringify(formData));
+    // Get existing totals from localStorage
+    const existingData =
+      JSON.parse(localStorage.getItem("categoryTotals")) || {};
+
+    // Merge with current formData
+    for (const category in formData) {
+      if (existingData.hasOwnProperty(category)) {
+        existingData[category] += formData[category];
+      } else {
+        existingData[category] = formData[category];
+      }
+    }
+
+    // Save the merged data back to localStorage
+    localStorage.setItem("categoryTotals", JSON.stringify(existingData));
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -161,4 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     myChart.update();
   });
+
+  console.log("Category totals:", localStorage.getItem("categoryTotals"));
 });
