@@ -7,7 +7,7 @@ const categoryTotals = {
 
 const ctx = document.getElementById("myChart");
 
-const categoryLabels = ["Energy use", "Transportation", "Food", "Other"];
+const categoryLabels = ["Energy", "Transportation", "Food", "Other"];
 const categoryColors = ["#4A90E2", "#E67E22", "#2E8B57", "#8E44AD"];
 
 const myChart = new Chart(ctx, {
