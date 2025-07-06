@@ -26,7 +26,10 @@ const myChart = new Chart(ctx, {
   options: {
     plugins: {
       legend: {
-        position: "top",
+        position: "left",
+        labels: {
+          color: "white", // ✅ Change legend text to white
+        },
       },
     },
   },

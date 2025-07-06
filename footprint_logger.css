@@ -1,3 +1,7 @@
+:root {
+  --border-radius: 0.5rem;
+}
+
 body {
   background-color: #7d7c7c;
   color: #fff;
@@ -12,19 +16,101 @@ body {
   justify-self: center;
 }
 
-#category-running-total {
-  background-color: blueviolet;
+fieldset {
+  border-radius: var(--border-radius);
+}
+
+select {
+  height: 2rem;
+  border-radius: var(--border-radius);
+}
+
+button {
+  height: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  color: #fff;
+  font-weight: bold;
+}
+
+#form-container {
+  padding: 0.5rem 1rem;
+}
+
+#submit-btn {
+  background-color: #11961a;
+  display: block;
+  margin-left: auto;
+  border: none;
+}
+
+#show-hide-visual {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+  border-top: 0.1rem solid rgb(158, 158, 158);
+  padding-top: 0.5rem;
+}
+
+#show-visual-btn,
+#hide-visual-btn {
+  background-color: #0d0c0c;
+  border: none;
+}
+
+#activity-container {
+  display: flex;
+  margin: 0.7rem 0 0.7rem 0;
+  flex-direction: column;
+}
+
+#total-emissions-chart {
+  display: flex;
+  justify-content: center;
+  color: #0d0c0c;
+}
+
+#chart-container {
+  background-color: #c2c2c2;
+  padding: 0.1rem 1rem 1rem 1rem;
+}
+
+canvas {
+  background-color: #11961a;
 }
 
 @media (min-width: 600px) {
   #container {
     min-width: max-content;
   }
+
   #content {
     display: flex;
   }
 
+  #form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 78vh;
+    padding: 1rem;
+  }
+
   #chart-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: 50%;
+    height: 80vh;
+  }
+
+  fieldset {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .radio-label {
+    display: flex;
   }
 }

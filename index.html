@@ -24,41 +24,51 @@
           <form id="activity-form">
             <fieldset>
               <legend>Category</legend>
-              <input
-                type="radio"
-                name="group"
-                id="energy-use"
-                value="energy-use" /><label for="energy-use">Energy</label>
-              <input
-                type="radio"
-                name="group"
-                id="transportation"
-                value="transportation" /><label for="transportation"
-                >Transportation</label
-              >
-              <input
-                type="radio"
-                name="group"
-                id="food-consumption"
-                value="food-consumption" /><label for="food-consumption"
-                >Food</label
-              >
-              <input
-                type="radio"
-                name="group"
-                id="other"
-                value="other"
-                default /><label for="other">Other</label>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="energy-use"
+                  value="energy-use" /><label for="energy-use">Energy</label>
+              </div>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="transportation"
+                  value="transportation" /><label for="transportation"
+                  >Transportation</label
+                >
+              </div>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="food-consumption"
+                  value="food-consumption" /><label for="food-consumption"
+                  >Food</label
+                >
+              </div>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="other"
+                  value="other"
+                  default /><label for="other">Other</label>
+              </div>
             </fieldset>
 
-            <label for="activity">Choose activity</label>
-            <select name="activity" id="activity">
-              <option value="">-- select --</option>
-            </select>
+            <div id="activity-container">
+              <label for="activity">Choose activity:</label>
+              <select name="activity" id="activity">
+                <option value="">-- select --</option>
+              </select>
+            </div>
 
             <button type="submit" id="submit-btn">Submit activity</button>
           </form>
-          <div id="show-visual">
+          <div id="show-hide-visual">
             <button id="show-visual-btn">Show chart</button>
             <button id="hide-visual-btn">Hide chart</button>
           </div>
