@@ -79,17 +79,22 @@ function setDefaultSelection() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("chart-container").style.display = "none";
+  const chartContainer = document.getElementById("chart-container");
   const showVisualBtn = document.getElementById("show-visual-btn");
   const hideVisualBtn = document.getElementById("hide-visual-btn");
+  const totalEmissions = document.getElementById("total-emissions");
+  const categoryRadios = document.querySelectorAll("input[name='group']");
+  const chartHeadingTotal = document.getElementById("total-emissions-chart");
+  const categoryActivities = document.getElementById("activity");
+  const submitBtn = document.getElementById("submit-btn");
+
+  chartContainer.style.display = "none";
   hideVisualBtn.style.display = "none";
 
   hideVisualBtn.addEventListener("click", () => {
-    document.getElementById("chart-container").style.display = "none";
+    chartContainer.style.display = "none";
     showVisualBtn.style.display = "block";
     hideVisualBtn.style.display = "none";
-
-    const totalEmissions = document.getElementById("total-emissions");
     totalEmissions.style.display = "block";
   });
 
@@ -114,29 +119,21 @@ document.addEventListener("DOMContentLoaded", () => {
       ];
 
       if (Object.values(categoryTotals).some((val) => val > 0)) {
-        document.getElementById("chart-container").style.display = "block";
+        chartContainer.style.display = "block";
         myChart.update();
 
         const overallFromStorage = localStorage.getItem("overallTotal");
-        const totalChartHeading = document.getElementById(
-          "total-emissions-chart"
-        );
-        if (overallFromStorage && totalChartHeading) {
-          totalChartHeading.textContent = `Total Emissions: ${parseFloat(
+        if (overallFromStorage && chartHeadingTotal) {
+          chartHeadingTotal.textContent = `Total Emissions: ${parseFloat(
             overallFromStorage
           ).toFixed(2)} kg CO₂`;
         }
       }
     }
 
-    const totalEmissions = document.getElementById("total-emissions");
     totalEmissions.style.display = "none";
   });
 
-  const categoryRadios = document.querySelectorAll("input[name='group']");
-  const categoryActivities = document.getElementById("activity");
-  const submitBtn = document.getElementById("submit-btn");
-  const totalEmissions = document.getElementById("total-emissions");
   let emissions = 0;
 
   categoryRadios.forEach((radio) => {
@@ -175,10 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const category = document.querySelector(
-      "input[name='group']:checked"
-    ).value;
-    const activityValue = document.getElementById("activity").value;
+    const category = selectedCategory.value;
+    const activityValue = categoryActivities.value;
 
     if (formData.hasOwnProperty(category)) {
       formData[category] += parseFloat(activityValue);
@@ -202,10 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key);
-      console.log(`Key: ${key}, Value: ${value}`);
     }
-
-    console.log("collected data: ", formData);
 
     const value = parseFloat(selectedOption);
     emissions += value;
@@ -215,7 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const updatedOverall = existingOverall + value;
     localStorage.setItem("overallTotal", updatedOverall.toFixed(2));
 
-    const chartHeadingTotal = document.getElementById("total-emissions-chart");
     if (existingOverall) {
       totalEmissions.textContent = `Total Emissions: ${parseFloat(
         updatedOverall.toFixed(2)
