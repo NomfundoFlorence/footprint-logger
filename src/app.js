@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const path = require("path");
 
 const { client, connectDatabase } = require("./db");
 
@@ -7,9 +8,9 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/", async (req, res) => {
-  // await connectDatabase();
   res.send("Inside the server");
 });
 
@@ -22,9 +23,9 @@ app.post("/signup", async (req, res) => {
     const collection = db.collection("users");
 
     const saltRounds = 10;
-    const hashPassword = bcrypt.hash(password, saltRounds);
+    const hashPassword = await bcrypt.hash(password, saltRounds);
 
-    collection.insertOne({
+    await collection.insertOne({
       firstName: firstName,
       lastName: lastName,
       email: email,
