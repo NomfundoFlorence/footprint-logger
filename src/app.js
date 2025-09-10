@@ -11,6 +11,7 @@ app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/", async (req, res) => {
@@ -29,7 +30,7 @@ app.post("/signup", async (req, res) => {
 
   try {
     await connectDatabase();
-    const db = client.database("footprintLogger");
+    const db = client.db("footprint_logger");
     const collection = db.collection("users");
 
     const saltRounds = 10;
