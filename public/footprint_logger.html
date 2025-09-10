@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./footprint_logger.css" />
+    <title>Carbon Footprint Logger</title>
+    <link
+      rel="shortcut icon"
+      href="https://cdn-icons-png.flaticon.com/512/4807/4807630.png"
+      type="image/x-icon" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <img
+        src="/assets/CO2-tree.webp"
+        alt="image of a tree with CO2"
+        width="100%"
+        height="110rem" />
+      <div id="content">
+        <div id="form-container">
+          <h1>CO<sub>2</sub> emission tracker</h1>
+          <form id="activity-form">
+            <fieldset>
+              <legend>Category</legend>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="energy-use"
+                  value="energy-use" /><label for="energy-use">Energy</label>
+              </div>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="transportation"
+                  value="transportation" /><label for="transportation"
+                  >Transportation</label
+                >
+              </div>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="food-consumption"
+                  value="food-consumption" /><label for="food-consumption"
+                  >Food</label
+                >
+              </div>
+              <div class="radio-label">
+                <input
+                  type="radio"
+                  name="group"
+                  id="other"
+                  value="other"
+                  default /><label for="other">Other</label>
+              </div>
+            </fieldset>
+
+            <div id="activity-container">
+              <label for="activity">Choose activity:</label>
+              <select name="activity" id="activity">
+                <option value="">-- select --</option>
+              </select>
+            </div>
+
+            <button type="submit" id="submit-btn">Submit activity</button>
+          </form>
+          <div id="show-hide-visual">
+            <button id="show-visual-btn">Show chart</button>
+            <button id="hide-visual-btn">Hide chart</button>
+          </div>
+          <h3 id="total-emissions"></h3>
+        </div>
+        <div id="chart-container">
+          <h3 id="total-emissions-chart"></h3>
+          <canvas id="myChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script src="./footprint_logger.js"></script>
+  </body>
+</html>
