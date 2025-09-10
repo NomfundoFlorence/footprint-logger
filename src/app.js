@@ -47,11 +47,41 @@ app.post("/signup", async (req, res) => {
       password: hashPassword,
     });
 
-    res.redirect("/logger");
+    res.redirect("/login");
   } catch (error) {
     console.error("Failed to sign user up", error);
     res.send("Failed to signup!");
   }
+});
+
+app.post("/login", async (req, res) => {
+  // console.log(req.body);
+  try {
+    const { email, password } = req.body;
+
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("users");
+
+    const user = await collection.findOne({ email: email });
+
+    if (user) {
+      const pwdResult = await bcrypt.compare(password, user.password);
+
+      if (!pwdResult) {
+        res.status(404).send("Incorrect password!");
+      } else {
+        res.status(200).send("Logged in successfully!");
+      }
+    } else {
+      res.send("No user found!");
+    }
+  } catch (error) {
+    console.error("Failed to log in", error);
+    res.status(500).send("Failed to log in");
+  }
+
+  // res.json(req.body);
 });
 
 app.listen(PORT, () => {
