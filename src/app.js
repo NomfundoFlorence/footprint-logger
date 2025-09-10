@@ -25,6 +25,10 @@ app.get("/login", (req, res) => {
   res.render("login", { title: "Log In" });
 });
 
+app.get("/logger", (req, res) => {
+  res.render("footprint_logger", { title: "Logger" });
+});
+
 app.post("/signup", async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
@@ -42,7 +46,8 @@ app.post("/signup", async (req, res) => {
       email: email,
       password: hashPassword,
     });
-    res.send("Signup successfully");
+
+    res.redirect("/logger");
   } catch (error) {
     console.error("Failed to sign user up", error);
     res.send("Failed to signup!");
