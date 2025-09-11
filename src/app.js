@@ -1,11 +1,15 @@
+const { client, connectDatabase } = require("./db");
+const jwt = require("jsonwebtoken");
 const express = require("express");
 const bcrypt = require("bcrypt");
 const path = require("path");
-
-const { client, connectDatabase } = require("./db");
+require("dotenv").config();
+const cookieParser = require("cookie-parser");
 
 const app = express();
+app.use(cookieParser());
 const PORT = 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
@@ -69,10 +73,28 @@ app.post("/login", async (req, res) => {
       const pwdResult = await bcrypt.compare(password, user.password);
 
       if (!pwdResult) {
-        res.status(404).send("Incorrect password!");
-      } else {
-        res.status(200).send("Logged in successfully!");
+        res.status(401).send("Invalid credentials!"); // authorization failure not unavailable resources
       }
+
+      const payload = {
+        user: {
+          id: user._id.toString(),
+        },
+      };
+
+      const authToken = jwt.sign(payload, JWT_SECRET);
+      const userEmail = user.email;
+
+      // res.json({ authToken, userEmail });
+
+      res.cookie("authToken", authToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // only over HTTPS in prod
+        sameSite: "strict",
+        maxAge: 60 * 60 * 1000, // 1 hour
+      });
+
+      res.redirect("/logger");
     } else {
       res.send("No user found!");
     }
@@ -80,7 +102,6 @@ app.post("/login", async (req, res) => {
     console.error("Failed to log in", error);
     res.status(500).send("Failed to log in");
   }
-
   // res.json(req.body);
 });
 
