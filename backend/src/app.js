@@ -106,9 +106,28 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// app.post("/emissions", (req, res) =>{
+app.post("/emissions", async (req, res) => {
+  try {
+    const { email, category, activity, emission } = req.body;
 
-// })
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const newEntry = {
+      email: email,
+      category: category,
+      activity: activity,
+      emission: emission,
+    };
+
+    await collection.insertOne(newEntry);
+
+    res.status(200).json({ message: "Activity logged successfully!" });
+  } catch (err) {
+    console.error("Failed to submit", err);
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`server running on http://localhost:${PORT}`);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 export default function Logger() {
   const activitiesData = {
@@ -60,19 +61,20 @@ export default function Logger() {
 
     const data = {
       email: localStorage.getItem("userEmail"),
-      data: {
-        category: categoryValue,
-        activity: activityLabel,
-        emission: activityValue,
-      },
+      category: categoryValue,
+      activity: activityLabel,
+      emission: activityValue,
     };
-
-    console.log(data);
 
     axios
       .post(`${BACKEND_URI}/emissions`, data)
       .then((response) => {
         console.log(response.data);
+
+        setTimeout(() => {
+          setSelectedCategory("");
+          setSelectedActivity("");
+        }, 1000);
       })
       .catch((err) => {
         console.error("Error submitting data:", err);
