@@ -5,7 +5,7 @@ export default function Landing() {
 
   return (
     <>
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1635695604201-2b718204bccb?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8A%3D%3D')] bg-cover bg-center"></div>
+      <div className="absolute inset-0 h-screen bg-[url('https://images.unsplash.com/photo-1635695604201-2b718204bccb?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8A%3D%3D')] bg-cover bg-center filter blur-[4px] md:blur-[6px]"></div>
 
       <div className="relative flex flex-col items-center justify-center h-screen w-full md:w-3/5 lg:w-1/2 ml-auto px-4 md:px-8 text-center md:text-left">
         <p className="w-full md:w-4/5 mb-6 text-green-600 text-center sm:text-lg md:text-xl">
