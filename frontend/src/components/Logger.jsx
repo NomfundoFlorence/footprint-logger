@@ -44,15 +44,40 @@ export default function Logger() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
     if (!selectedCategory || !selectedActivity) {
       alert("Please select a category and an activity before submitting.");
       return;
     }
 
-    console.log("Selected category:", selectedCategory);
-    console.log("Selected activity value:", selectedActivity);
+    const formData = new FormData(event.target);
+    const categoryValue = formData.get("group");
+    const activityValue = formData.get("activity");
 
-    // You can add Chart.js updates or localStorage logic here
+    const activityLabel = activities
+      .find((a) => a.startsWith(activityValue + "-"))
+      .split("-")[1];
+
+    const data = {
+      email: localStorage.getItem("userEmail"),
+      data: {
+        category: categoryValue,
+        activity: activityLabel,
+        emission: activityValue,
+      },
+    };
+
+    console.log(data);
+
+    axios
+      .post(`${BACKEND_URI}/emissions`, data)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((err) => {
+        console.error("Error submitting data:", err);
+        alert("There was an error logging your activity. Please try again.");
+      });
   };
 
   const activities = selectedCategory ? activitiesData[selectedCategory] : [];
@@ -98,7 +123,6 @@ export default function Logger() {
             </label>
             <select
               name="activity"
-              id="activity"
               value={selectedActivity}
               onChange={handleActivityChange}
               disabled={!selectedCategory}
@@ -116,8 +140,7 @@ export default function Logger() {
           </div>
 
           <button
-            type="submit"
-            id="submit-btn"
+            onSubmit={handleSubmit}
             className="block bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full sm:w-1/3">
             Submit activity
           </button>

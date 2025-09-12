@@ -104,8 +104,11 @@ app.post("/login", async (req, res) => {
     console.error("Failed to log in", error);
     res.status(500).send("Failed to log in");
   }
-  // res.json(req.body);
 });
+
+// app.post("/emissions", (req, res) =>{
+
+// })
 
 app.listen(PORT, () => {
   console.log(`server running on http://localhost:${PORT}`);

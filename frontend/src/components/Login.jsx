@@ -17,9 +17,14 @@ export default function Login() {
     axios
       .post(`${BACKEND_URI}/login`, data)
       .then((response) => {
-        console.log(response.data);
-        console.log("I got here");
+        // console.log(response.data);
+        // console.log("I got here");
 
+        localStorage.setItem("authToken", response.data.authToken);
+        localStorage.setItem("userEmail", response.data.userEmail);
+
+        // console.log(localStorage);
+        
         if (response.status === 200) {
           navigate("/logger");
         }
