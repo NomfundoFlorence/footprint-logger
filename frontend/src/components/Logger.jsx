@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Logger() {
   const activitiesData = {
@@ -31,6 +32,7 @@ export default function Logger() {
     other: ["1.5-Waste Management", "0.2-Gardening", "2-Shopping Habits"],
   };
 
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedActivity, setSelectedActivity] = useState("");
 
@@ -51,6 +53,12 @@ export default function Logger() {
       return;
     }
 
+    const token = localStorage.getItem("authToken");
+    /////////////////////////////////////////////////////////////clear token (temporary)
+    // localStorage.removeItem("authToken");
+
+    // console.log(token);
+
     const formData = new FormData(event.target);
     const categoryValue = formData.get("group");
     const activityValue = formData.get("activity");
@@ -67,7 +75,11 @@ export default function Logger() {
     };
 
     axios
-      .post(`${BACKEND_URI}/emissions`, data)
+      .post(`${BACKEND_URI}/logger`, data, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "Bearer",
+        },
+      })
       .then((response) => {
         console.log(response.data);
 
@@ -77,8 +89,12 @@ export default function Logger() {
         }, 1000);
       })
       .catch((err) => {
-        console.error("Error submitting data:", err);
-        alert("There was an error logging your activity. Please try again.");
+        if (err.response.status === 401) {
+          alert("Log in to use the application.");
+          navigate("/login");
+        } else {
+          alert("Server Error", err);
+        }
       });
   };
 
@@ -141,9 +157,7 @@ export default function Logger() {
             </select>
           </div>
 
-          <button
-            onSubmit={handleSubmit}
-            className="block bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full sm:w-1/3">
+          <button className="block bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full sm:w-1/3">
             Submit activity
           </button>
         </form>

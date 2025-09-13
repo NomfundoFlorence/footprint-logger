@@ -1,46 +1,31 @@
 const { client, connectDatabase } = require("../models/db");
+const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const bcrypt = require("bcrypt");
 const path = require("path");
 require("dotenv").config();
-const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
 app.use(cookieParser());
+
 const PORT = 3001;
 const JWT_SECRET = process.env.JWT_SECRET;
-
-// app.set("views", path.join(__dirname, "../views"));
-// app.set("view engine", "pug");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../public")));
 
-const cors = require("cors");
-
-// Allow requests from your frontend (Vite React) on port 5173
 app.use(
   cors({
     origin: "http://localhost:5173",
-    // credentials: true, // only needed if you’re sending cookies
   })
 );
 
 app.get("/", async (req, res) => {
   res.send("Inside the server");
 });
-
-// app.get("/signup", (req, res) => {
-//   res.render("signup", { title: "Sign Up" });
-// });
-// app.get("/login", (req, res) => {
-//   res.render("login", { title: "Log In" });
-// });
-// app.get("/logger", (req, res) => {
-//   res.render("footprint_logger", { title: "Logger" });
-// });
 
 app.post("/signup", async (req, res) => {
   console.log("I got here");
@@ -62,7 +47,6 @@ app.post("/signup", async (req, res) => {
       password: hashPassword,
     });
 
-    // res.redirect("/login");
     res.status(200).json({ message: "Signed up successfully!" });
   } catch (error) {
     console.error("Failed to sign user up", error);
@@ -84,7 +68,7 @@ app.post("/login", async (req, res) => {
       const pwdResult = await bcrypt.compare(password, user.password);
 
       if (!pwdResult) {
-        return res.status(401).send("Invalid credentials!"); // authorization failure not unavailable resources
+        return res.status(401).send("Invalid credentials!");
       }
 
       const payload = {
@@ -106,7 +90,31 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/emissions", async (req, res) => {
+function authenticate(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  // console.log("I execute 1");
+
+  if (!token) {
+    // console.log("I execute 2");
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  // console.log("I execute 3");
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded.user;
+
+    console.log(req.user);
+
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid or expired token" });
+  }
+}
+
+app.post("/logger", authenticate, async (req, res) => {
   try {
     const { email, category, activity, emission } = req.body;
 
@@ -115,6 +123,7 @@ app.post("/emissions", async (req, res) => {
     const collection = db.collection("emissions");
 
     const newEntry = {
+      userId: req.user.id,
       email: email,
       category: category,
       activity: activity,
