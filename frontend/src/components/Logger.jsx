@@ -38,14 +38,14 @@ export default function Logger() {
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
-    setSelectedActivity(""); // reset activity when category changes
+    setSelectedActivity("");
   };
 
   const handleActivityChange = (event) => {
     setSelectedActivity(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  function handleSubmit(event) {
     event.preventDefault();
     const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
     if (!selectedCategory || !selectedActivity) {
@@ -96,24 +96,56 @@ export default function Logger() {
           alert("Server Error", err);
         }
       });
-  };
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("firstName");
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+  }
+
+  function dashboardNavigation() {
+    navigate("/dashboard");
+  }
 
   const activities = selectedCategory ? activitiesData[selectedCategory] : [];
 
   return (
-    <>
-      <div className="absolute inset-0 h-screen bg-[url('https://images.unsplash.com/photo-1635695604201-2b718204bccb?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8A%3D%3D')] bg-cover bg-center filter blur-[4px] md:blur-[6px] md:transform md:scale-x-[-1]"></div>
-      <div className="relative flex w-screen h-screen items-top justify-center xl:justify-start">
+    <div className="flex flex-col h-screen">
+      <div className="h-14 bg-green-700 shadow flex items-center justify-between px-4">
+        <span className="text-lg font-bold text-white">{`Hi, ${localStorage.getItem(
+          "firstName"
+        )}!`}</span>
+        <div>
+          <button
+            onClick={dashboardNavigation}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded">
+            Dashboard
+          </button>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-4 rounded">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div className="relative flex-1 flex items-top justify-center xl:justify-start">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1635695604201-2b718204bccb?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8A%3D%3D')] bg-cover bg-center"></div>
         <form
           id="activity-form"
           onSubmit={handleSubmit}
-          className="flex flex-col justify-center bg-green-50 h-[73.4286%] w-11/12 border-0 rounded-b-[50px] rounded-t-sm md:w-1/2 sm:h-screen sm:rounded-b-none">
+          className="relative flex flex-col justify-center bg-green-50 h-[73.4286%] w-11/12 border-0 rounded-b-[50px] rounded-t-sm md:w-1/2 sm:h-full sm:rounded-b-none">
           <fieldset className="h-[155px] flex flex-col p-4 m-4">
             <legend className="ml-auto mr-auto text-xl text-green-950 font-bold mb-2 sm:text-2xl">
               Select category
             </legend>
             {Object.keys(activitiesData).map((key) => (
-              <div className="radio-label mb-2 " key={key}>
+              <div className="radio-label mb-2" key={key}>
                 <input
                   type="radio"
                   name="group"
@@ -162,6 +194,6 @@ export default function Logger() {
           </button>
         </form>
       </div>
-    </>
+    </div>
   );
 }

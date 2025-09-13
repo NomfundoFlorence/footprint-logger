@@ -78,9 +78,10 @@ app.post("/login", async (req, res) => {
       };
 
       const authToken = jwt.sign(payload, JWT_SECRET);
+      const firstName = user.firstName;
       const userEmail = user.email;
 
-      return res.status(200).json({ authToken, userEmail });
+      return res.status(200).json({ authToken, firstName, userEmail });
     } else {
       return res.status(404).json("No user found!");
     }

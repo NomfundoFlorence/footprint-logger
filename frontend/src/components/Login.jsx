@@ -21,10 +21,11 @@ export default function Login() {
         // console.log("I got here");
 
         localStorage.setItem("authToken", response.data.authToken);
+        localStorage.setItem("firstName", response.data.firstName);
         localStorage.setItem("userEmail", response.data.userEmail);
 
         // console.log(localStorage);
-        
+
         if (response.status === 200) {
           navigate("/logger");
         }

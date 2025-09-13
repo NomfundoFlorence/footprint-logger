@@ -5,6 +5,7 @@ import Landing from "./components/Landing";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Logger from "./components/Logger";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/logger" element={<Logger />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );
