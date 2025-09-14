@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Logger() {
   const activitiesData = {
@@ -35,6 +36,7 @@ export default function Logger() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedActivity, setSelectedActivity] = useState("");
+  const [userLogs, setUserLogs] = useState([]);
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
@@ -86,6 +88,7 @@ export default function Logger() {
         setTimeout(() => {
           setSelectedCategory("");
           setSelectedActivity("");
+          getUserLogs();
         }, 1000);
       })
       .catch((err) => {
@@ -110,6 +113,30 @@ export default function Logger() {
 
   function dashboardNavigation() {
     navigate("/dashboard");
+  }
+
+  useEffect(() => {
+    getUserLogs();
+  }, []);
+
+  const token = localStorage.getItem("authToken");
+  const headers = {
+    headers: { Authorization: token ? `Bearer ${token}` : null },
+  };
+
+  function getUserLogs() {
+    // setActiveTab("summary");
+    // setLoading(true);
+    const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
+
+    axios
+      .get(`${BACKEND_URI}/user-logs`, headers)
+      .then((response) => {
+        const logs = response.data.result;
+        setUserLogs(logs);
+      })
+      .catch((err) => console.error("Failed to fetch user's logs", err))
+      // .finally(() => setLoading(false));
   }
 
   const activities = selectedCategory ? activitiesData[selectedCategory] : [];
@@ -193,6 +220,37 @@ export default function Logger() {
             Submit activity
           </button>
         </form>
+
+        {userLogs.length > 0 && (
+          <div className="relative flex-1 bg-blue/80 p-4 rounded shadow-md">
+            <h2 className="text-xl font-bold text-green-900 mb-4 text-center">
+              My Logs
+            </h2>
+            <p className="text-green-700 font-semibold text-center mb-4">
+              Total Emissions:{" "}
+              {userLogs
+                .reduce((sum, log) => sum + parseFloat(log.emission || 0), 0)
+                .toFixed(2)}{" "}
+              kg CO₂{" "}
+            </p>
+            <div className="flex flex-col space-y-2 border-t">
+              {userLogs.map((log, index) => (
+                <div
+                  key={log._id}
+                  className="flex justify-between items-center bg-green-50 p-2 rounded">
+                  <span className="w-6 text-center font-medium">
+                    {index + 1}
+                  </span>
+                  <div className="flex justify-between flex-1 ml-4">
+                    <span className="font-medium">{log.category}</span>
+                    <span className="font-medium">{log.activity}</span>
+                    <span>{log.emission} kg CO₂</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
