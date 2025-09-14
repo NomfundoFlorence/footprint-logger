@@ -253,7 +253,7 @@ export default function Dashboard() {
                       {index + 1}
                     </span>
                     <div className="flex justify-between flex-1 ml-4">
-                      <span className="font-medium">{user._id}</span>
+                      <span className="font-medium">{user.name}</span>
                       <span>{user.totalEmissions.toFixed(2)} kg CO₂</span>
                     </div>
                   </div>
