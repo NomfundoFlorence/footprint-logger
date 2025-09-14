@@ -131,9 +131,10 @@ app.post("/logger", authenticate, async (req, res) => {
       emission: emission,
     };
 
-    await collection.insertOne(newEntry);
+    const newLog = await collection.insertOne(newEntry);
+    const postedLog = await collection.findOne({_id: newLog.insertedId})
 
-    res.status(200).json({ message: "Activity logged successfully!" });
+    res.status(200).json({ message: "Activity logged successfully!", postedLog });
   } catch (err) {
     console.error("Failed to submit", err);
   }
@@ -145,7 +146,7 @@ app.get("/user-logs", authenticate, async (req, res) => {
     const db = client.db("footprint_logger");
     const collection = db.collection("emissions");
 
-    const result = await collection.find({ userId: req.user.userId }).toArray();
+    const result = await collection.find({ userId: req.user.id }).sort({_id: -1}).toArray();
 
     res.status(200).json({ message: "Logs retrieved successfully!", result });
   } catch (err) {

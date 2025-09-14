@@ -56,10 +56,6 @@ export default function Logger() {
     }
 
     const token = localStorage.getItem("authToken");
-    /////////////////////////////////////////////////////////////clear token (temporary)
-    // localStorage.removeItem("authToken");
-
-    // console.log(token);
 
     const formData = new FormData(event.target);
     const categoryValue = formData.get("group");
@@ -84,11 +80,12 @@ export default function Logger() {
       })
       .then((response) => {
         console.log(response.data);
+        setUserLogs((prev) => [response.data.postedLog, ...prev]);
 
         setTimeout(() => {
           setSelectedCategory("");
           setSelectedActivity("");
-          getUserLogs();
+          // getUserLogs();
         }, 1000);
       })
       .catch((err) => {
@@ -133,10 +130,12 @@ export default function Logger() {
       .get(`${BACKEND_URI}/user-logs`, headers)
       .then((response) => {
         const logs = response.data.result;
+        console.log(logs);
+
         setUserLogs(logs);
       })
-      .catch((err) => console.error("Failed to fetch user's logs", err))
-      // .finally(() => setLoading(false));
+      .catch((err) => console.error("Failed to fetch user's logs", err));
+    // .finally(() => setLoading(false));
   }
 
   const activities = selectedCategory ? activitiesData[selectedCategory] : [];
@@ -161,12 +160,12 @@ export default function Logger() {
         </div>
       </div>
 
-      <div className="relative flex-1 flex items-top justify-center xl:justify-start">
+      <div className="relative flex-1 flex items-center justify-center xl:justify-start">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1635695604201-2b718204bccb?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8A%3D%3D')] bg-cover bg-center"></div>
         <form
           id="activity-form"
           onSubmit={handleSubmit}
-          className="relative flex flex-col justify-center bg-green-50 h-[73.4286%] w-11/12 border-0 rounded-b-[50px] rounded-t-sm md:w-1/2 sm:h-full sm:rounded-b-none">
+          className="relative flex flex-col justify-center bg-white/90 p-4 shadow-md h-5/6 w-11/12 border-0 rounded-[10px] md:w-1/2 m-4">
           <fieldset className="h-[155px] flex flex-col p-4 m-4">
             <legend className="ml-auto mr-auto text-xl text-green-950 font-bold mb-2 sm:text-2xl">
               Select category
@@ -231,9 +230,11 @@ export default function Logger() {
               {userLogs
                 .reduce((sum, log) => sum + parseFloat(log.emission || 0), 0)
                 .toFixed(2)}{" "}
-              kg CO₂{" "}
+              kg CO₂
             </p>
-            <div className="flex flex-col space-y-2 border-t">
+
+            {/* Scrollable container */}
+            <div className="border-y h-[500px] overflow-y-auto flex flex-col space-y-2">
               {userLogs.map((log, index) => (
                 <div
                   key={log._id}

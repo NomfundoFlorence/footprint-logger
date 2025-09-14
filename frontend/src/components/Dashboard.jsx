@@ -167,7 +167,7 @@ export default function Dashboard() {
                       .toFixed(2)}{" "}
                     kg CO₂{" "}
                   </p>
-                  <div className="flex flex-col space-y-2 border-t">
+                  <div className="flex flex-col space-y-2 border-y h-[375px] overflow-y-auto">
                     {userLogs.map((log, index) => (
                       <div
                         key={log._id}
