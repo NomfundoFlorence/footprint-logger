@@ -6,12 +6,30 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [leaderboard, setLeaderboard] = useState([]);
+  const [usersAverage, setUsersAverage] = useState([]);
   const [loading, setLoading] = useState(false);
 
   function handleLogout() {
     setTimeout(() => {
       navigate("/login");
     }, 2000);
+  }
+
+  function getUsersAverage() {
+    const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
+    setLoading(true);
+    axios
+      .get(`${BACKEND_URI}/users-average`)
+      .then((response) => {
+        console.log(response.data);
+        setUsersAverage(response.data.result);
+        setLeaderboard([]);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch users' average", error);
+        res.status(500).json({ message: "Failed to fetch leaderboard", error });
+      })
+      .finally(() => setLoading(false));
   }
 
   function getLeaderboard() {
@@ -22,9 +40,11 @@ export default function Dashboard() {
       .then((response) => {
         console.log(response.data);
         setLeaderboard(response.data.data);
+        setUsersAverage([]);
       })
       .catch((error) => {
         console.error("Failed to fetch leaderboard", error);
+        res.status(500).json({ message: "Failed to fetch leaderboard", error });
       })
       .finally(() => setLoading(false));
   }
@@ -41,16 +61,17 @@ export default function Dashboard() {
               My summary
             </a>
           </div>
-          <div className="flex items-center bg-green-50 h-12 p-4 hover:bg-green-100 cursor-pointer">
+          <div
+            onClick={getUsersAverage}
+            className="flex items-center bg-green-50 h-12 p-4 hover:bg-green-100 cursor-pointer">
             <a href="#" className="block text-green-800 hover:text-green-600">
               Users average
             </a>
           </div>
-          <div className="flex items-center bg-green-50 h-12 p-4 border-t hover:bg-green-100 cursor-pointer">
-            <a
-              href="#"
-              onClick={getLeaderboard}
-              className="block text-green-800 hover:text-green-600">
+          <div
+            onClick={getLeaderboard}
+            className="flex items-center bg-green-50 h-12 p-4 border-t hover:bg-green-100 cursor-pointer">
+            <a href="#" className="block text-green-800 hover:text-green-600">
               Leaderboard
             </a>
           </div>
@@ -76,7 +97,7 @@ export default function Dashboard() {
             {leaderboard.length > 0 && (
               <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl">
                 <div className="flex justify-center">
-                  <h2 className="text-xl font-semibold text-green-900 mb-4 my-auto text-center">
+                  <h2 className="text-2xl font-bold text-green-900 mb-4 my-auto text-center">
                     Low-footprint users (Top 10)
                   </h2>
                 </div>
@@ -96,6 +117,15 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {usersAverage.length > 0 && (
+              <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl">
+                <h2 className="text-2xl font-bold text-green-900 mb-4 my-auto text-center">
+                  Average across all users
+                </h2>
+                <p className="text-xl text-green-700 font-semibold text-center">{`${usersAverage[0].averageEmission} kg CO₂`}</p>
               </div>
             )}
           </div>

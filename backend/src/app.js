@@ -139,6 +139,45 @@ app.post("/logger", authenticate, async (req, res) => {
   }
 });
 
+app.get("/users-average", async (req, res) => {
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const result = await collection
+      .aggregate([
+        { $addFields: { emissionNum: { $toDouble: "$emission" } } },
+        {
+          $group: {
+            _id: "$userId",
+            totalPerUser: { $sum: "$emissionNum" },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            sumEmissions: { $sum: "$totalPerUser" },
+            numUsers: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            averageEmission: { $divide: ["$sumEmissions", "$numUsers"] },
+          },
+        },
+      ])
+      .toArray();
+
+    // console.log(result[0].averageEmission);
+    res.status(200).json({ message: "Data retrieved successfully!", result });
+  } catch (err) {
+    console.error("Server error: ", err);
+    res.status(500).json({ message: "could not fetch data: ", err });
+  }
+});
+
 app.get("/leaderboard", async (req, res) => {
   try {
     await connectDatabase();
