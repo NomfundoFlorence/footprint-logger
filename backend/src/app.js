@@ -139,6 +139,44 @@ app.post("/logger", authenticate, async (req, res) => {
   }
 });
 
+app.get("/leaderboard", async (req, res) => {
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const topTen = await collection
+      .aggregate([
+        {
+          $addFields: {
+            emissionNum: { $toDouble: "$emission" },
+          },
+        },
+        {
+          $group: {
+            _id: "$userId",
+            totalEmissions: { $sum: "$emissionNum" },
+          },
+        },
+        {
+          $sort: { totalEmissions: 1 },
+        },
+        {
+          $limit: 10,
+        },
+      ])
+      .toArray();
+
+    console.log(topTen);
+    res
+      .status(200)
+      .json({ message: "Top 10 retrieved successfully!", data: topTen });
+  } catch (err) {
+    console.error("Could not fetch top 10.");
+    res.status(500).json({ message: "Server error", err });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`server running on http://localhost:${PORT}`);
 });
