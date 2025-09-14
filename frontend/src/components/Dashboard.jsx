@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Home, Users, Trophy, NotebookPen, LogOut } from "lucide-react";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -89,7 +90,7 @@ export default function Dashboard() {
   function handleLogout() {
     setTimeout(() => {
       navigate("/login");
-    }, 2000);
+    }, 1000);
   }
 
   useEffect(() => {
@@ -98,50 +99,70 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen">
-      <div className="w-64 bg-green-50 shadow-md z-10 flex flex-col">
-        <div className="p-4 text-xl font-bold bg-green-700 text-white">
-          {`Hi, ${localStorage.getItem("firstName") || "User"}!`}
+      <div className="w-16 md:w-64 max-w-64 bg-green-50 shadow-md z-10 flex flex-col">
+        <div className="p-4 bg-green-700 text-white text-center md:text-left">
+          <span className="hidden md:inline text-xl font-bold">
+            Hi, {localStorage.getItem("firstName") || "User"}!
+          </span>
+          <span className="inline md:hidden font-bold">Hi!</span>
         </div>
+
         <nav className="flex-1">
           <div
             onClick={getUserLogs}
             className={`flex items-center h-12 p-4 border-b cursor-pointer hover:bg-green-100 ${
               activeTab === "summary" ? "bg-green-200" : "bg-green-50"
             }`}>
-            <span className="block text-green-800 hover:text-green-600">
+            <Home className="text-green-800" />
+            <span className="ml-3 text-green-800 hover:text-green-600 hidden md:inline">
               My summary
             </span>
           </div>
+
           <div
             onClick={getUsersAverage}
             className={`flex items-center h-12 p-4 cursor-pointer hover:bg-green-100 ${
               activeTab === "average" ? "bg-green-200" : "bg-green-50"
             }`}>
-            <span className="block text-green-800 hover:text-green-600">
+            <Users className="text-green-800" />
+            <span className="ml-3 text-green-800 hover:text-green-600 hidden md:inline">
               Users average
             </span>
           </div>
+
           <div
             onClick={getLeaderboard}
             className={`flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100 ${
               activeTab === "leaderboard" ? "bg-green-200" : "bg-green-50"
             }`}>
-            <span className="block text-green-800 hover:text-green-600">
+            <Trophy className="text-green-800" />
+            <span className="ml-3 text-green-800 hover:text-green-600 hidden md:inline">
               Leaderboard
             </span>
           </div>
+
+          <div
+            onClick={() => navigate("/logger")}
+            className="flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100">
+            <NotebookPen className="text-green-800" />
+            <span className="ml-3 text-green-800 hover:text-green-600 hidden md:inline">
+              Return to Logger
+            </span>
+          </div>
         </nav>
+
         <button
           onClick={handleLogout}
-          className="m-4 mb-16 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded">
-          Logout
+          className="m-4 mb-16 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded">
+          <LogOut className="text-white" />
+          <span className="ml-2 hidden md:inline">Logout</span>
         </button>
       </div>
 
       <div className="relative flex-1 p-4 overflow-y-auto">
         <div
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1635695604201-2b718204bccb?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8A%3D%3D')] 
-                      bg-cover bg-center filter blur-[4px] md:transform md:scale-x-[-1]"></div>
+          bg-cover bg-center filter blur-[4px] md:transform md:scale-x-[-1]"></div>
 
         <div className="relative z-10">
           <h1 className="text-3xl font-bold text-green-900 mb-5">Dashboard</h1>
@@ -165,7 +186,7 @@ export default function Dashboard() {
                         0
                       )
                       .toFixed(2)}{" "}
-                    kg CO₂{" "}
+                    kg CO₂
                   </p>
                   <div className="flex flex-col space-y-2 border-y h-[375px] overflow-y-auto">
                     {userLogs.map((log, index) => (
@@ -232,7 +253,7 @@ export default function Dashboard() {
                       {index + 1}
                     </span>
                     <div className="flex justify-between flex-1 ml-4">
-                      <span className="font-medium">{user._id}</span>
+                      <span className="font-medium">{user.name}</span>
                       <span>{user.totalEmissions.toFixed(2)} kg CO₂</span>
                     </div>
                   </div>

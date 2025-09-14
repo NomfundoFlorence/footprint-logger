@@ -17,17 +17,12 @@ export default function Login() {
     axios
       .post(`${BACKEND_URI}/login`, data)
       .then((response) => {
-        // console.log(response.data);
-        // console.log("I got here");
-
         localStorage.setItem("authToken", response.data.authToken);
         localStorage.setItem("firstName", response.data.firstName);
         localStorage.setItem("userEmail", response.data.userEmail);
 
-        // console.log(localStorage);
-
         if (response.status === 200) {
-          navigate("/logger");
+          navigate("/dashboard");
         }
       })
       .catch((err) => {
@@ -49,7 +44,7 @@ export default function Login() {
       <div className="relative flex w-screen h-screen items-center justify-center xl:justify-end xl:pr-10">
         <form
           onSubmit={login}
-          className="relative flex flex-col w-4/5 bg-green-50 pl-8 pr-8 pt-16 pb-16 sm:w-2/3 lg:w-1/2 xl:w-2/5">
+          className="relative flex rounded flex-col w-4/5 bg-green-50 pl-8 pr-8 pt-16 pb-16 sm:w-2/3 lg:w-1/2 xl:w-2/5">
           <h1 className="ml-auto mr-auto text-xl text-green-950 font-bold mb-5 sm:text-2xl">
             Welcome back!
           </h1>
@@ -74,7 +69,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full sm:w-1/3">
+            className="bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:w-1/3">
             Log In
           </button>
 

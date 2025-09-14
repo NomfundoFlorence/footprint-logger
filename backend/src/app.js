@@ -21,19 +21,23 @@ app.use(
   })
 );
 
-app.get("/", async (req, res) => {
+app.get("/", async (_req, res) => {
   res.send("Inside the server");
 });
 
 app.post("/signup", async (req, res) => {
-  console.log("I got here");
-
   const { firstName, lastName, email, password } = req.body;
 
   try {
     await connectDatabase();
     const db = client.db("footprint_logger");
     const collection = db.collection("users");
+
+    const existingUser = await collection.findOne({ email: email });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
 
     const saltRounds = 10;
     const hashPassword = await bcrypt.hash(password, saltRounds);
@@ -72,6 +76,7 @@ app.post("/login", async (req, res) => {
       const payload = {
         user: {
           id: user._id.toString(),
+          name: `${user.firstName} ${user.lastName}`,
         },
       };
 
@@ -93,19 +98,14 @@ function authenticate(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  // console.log("I execute 1");
-
   if (!token) {
-    // console.log("I execute 2");
     return res.status(401).json({ message: "No token provided" });
   }
 
-  // console.log("I execute 3");
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded.user;
-
-    console.log(req.user);
+    // console.log((req.user));
 
     next();
   } catch (err) {
@@ -114,6 +114,8 @@ function authenticate(req, res, next) {
 }
 
 app.post("/logger", authenticate, async (req, res) => {
+  // console.log(req.body);
+
   try {
     const { email, category, activity, emission } = req.body;
 
@@ -124,6 +126,7 @@ app.post("/logger", authenticate, async (req, res) => {
     const newEntry = {
       userId: req.user.id,
       email: email,
+      name: req.user.name,
       category: category,
       activity: activity,
       emission: emission,
@@ -158,7 +161,7 @@ app.get("/user-logs", authenticate, async (req, res) => {
   }
 });
 
-app.get("/users-average", async (req, res) => {
+app.get("/users-average", async (_req, res) => {
   try {
     await connectDatabase();
     const db = client.db("footprint_logger");
@@ -189,7 +192,6 @@ app.get("/users-average", async (req, res) => {
       ])
       .toArray();
 
-    // console.log(result[0].averageEmission);
     res.status(200).json({ message: "Data retrieved successfully!", result });
   } catch (err) {
     console.error("Server error: ", err);
@@ -197,7 +199,7 @@ app.get("/users-average", async (req, res) => {
   }
 });
 
-app.get("/leaderboard", async (req, res) => {
+app.get("/leaderboard", async (_req, res) => {
   try {
     await connectDatabase();
     const db = client.db("footprint_logger");
@@ -213,6 +215,7 @@ app.get("/leaderboard", async (req, res) => {
         {
           $group: {
             _id: "$userId",
+            name: { $last: "$name" },
             totalEmissions: { $sum: "$emissionNum" },
           },
         },
@@ -224,8 +227,6 @@ app.get("/leaderboard", async (req, res) => {
         },
       ])
       .toArray();
-
-    console.log(topTen);
     res
       .status(200)
       .json({ message: "Top 10 retrieved successfully!", data: topTen });

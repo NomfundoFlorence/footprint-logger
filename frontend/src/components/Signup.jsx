@@ -5,7 +5,6 @@ export default function Signup() {
   const navigate = useNavigate();
 
   function signup(event) {
-    console.log("I got here front");
     event.preventDefault();
     const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
     const formData = new FormData(event.target);
@@ -19,12 +18,12 @@ export default function Signup() {
 
     axios
       .post(`${BACKEND_URI}/signup`, data)
-      .then((response) => {
-        console.log(response.data);
-        console.log("I get here 2")
+      .then(() => {
         navigate("/login");
       })
       .catch((error) => {
+        alert("Email already taken. Try logging in.");
+        if (error.response.status === 409) navigate("/login");
         console.error("Failed!", error);
       });
   }
@@ -35,7 +34,7 @@ export default function Signup() {
       <div className="relative flex w-screen h-screen items-center justify-center xl:justify-end xl:pr-10">
         <form
           onSubmit={signup}
-          className="relative flex flex-col w-4/5 bg-green-50 pl-8 pr-8 pt-16 pb-16 sm:w-2/3 lg:w-1/2 xl:w-2/5">
+          className="relative flex flex-col rounded w-4/5 bg-green-50 pl-8 pr-8 pt-16 pb-16 sm:w-2/3 lg:w-1/2 xl:w-2/5">
           <h1 className="ml-auto mr-auto text-xl text-green-950 font-bold mb-5 sm:text-2xl">
             Welcome!
           </h1>
@@ -78,7 +77,7 @@ export default function Signup() {
 
           <button
             type="submit"
-            className="bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full sm:w-1/3">
+            className="bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:w-1/3">
             Sign Up
           </button>
 

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { LayoutDashboard, LogOut } from "lucide-react";
 
 export default function Logger() {
   const activitiesData = {
@@ -79,17 +79,15 @@ export default function Logger() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setUserLogs((prev) => [response.data.postedLog, ...prev]);
 
         setTimeout(() => {
           setSelectedCategory("");
           setSelectedActivity("");
-          // getUserLogs();
         }, 1000);
       })
       .catch((err) => {
-        if (err.response.status === 401) {
+        if (err.response?.status === 401) {
           alert("Log in to use the application.");
           navigate("/login");
         } else {
@@ -112,30 +110,22 @@ export default function Logger() {
     navigate("/dashboard");
   }
 
-  useEffect(() => {
-    getUserLogs();
-  }, []);
-
   const token = localStorage.getItem("authToken");
   const headers = {
     headers: { Authorization: token ? `Bearer ${token}` : null },
   };
 
+  useEffect(() => {
+    getUserLogs();
+  }, []);
+
   function getUserLogs() {
-    // setActiveTab("summary");
-    // setLoading(true);
     const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
 
     axios
       .get(`${BACKEND_URI}/user-logs`, headers)
-      .then((response) => {
-        const logs = response.data.result;
-        console.log(logs);
-
-        setUserLogs(logs);
-      })
+      .then((response) => setUserLogs(response.data.result))
       .catch((err) => console.error("Failed to fetch user's logs", err));
-    // .finally(() => setLoading(false));
   }
 
   const activities = selectedCategory ? activitiesData[selectedCategory] : [];
@@ -146,28 +136,33 @@ export default function Logger() {
         <span className="text-lg font-bold text-white">{`Hi, ${localStorage.getItem(
           "firstName"
         )}!`}</span>
-        <div>
-          <button
+        <nav className="flex">
+          <div
             onClick={dashboardNavigation}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded">
-            Dashboard
-          </button>
-          <button
+            className="flex items-center h-full p-4 cursor-pointer hover:bg-green-600 justify-center md:justify-start border-l border-green-600">
+            <LayoutDashboard className="text-green-50" />
+            <span className="ml-3 text-green-50 hidden md:inline">
+              Dashboard
+            </span>
+          </div>
+          <div
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-4 rounded">
-            Logout
-          </button>
-        </div>
+            className="flex items-center h-full p-4 cursor-pointer hover:bg-green-600 justify-center md:justify-start border-l border-green-600">
+            <LogOut className="text-green-50" />
+            <span className="ml-3 text-green-50 hidden md:inline">Logout</span>
+          </div>
+        </nav>
       </div>
 
-      <div className="relative flex-1 flex items-center justify-center xl:justify-start">
+      <div className="relative flex-1 flex flex-col lg:flex-row sm:h-4/5 items-start justify-center gap-8 p-4">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1635695604201-2b718204bccb?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8A%3D%3D')] bg-cover bg-center"></div>
+
         <form
           id="activity-form"
           onSubmit={handleSubmit}
-          className="relative flex flex-col justify-center bg-white/90 p-4 shadow-md h-5/6 w-11/12 border-0 rounded-[10px] md:w-1/2 m-4">
-          <fieldset className="h-[155px] flex flex-col p-4 m-4">
-            <legend className="ml-auto mr-auto text-xl text-green-950 font-bold mb-2 sm:text-2xl">
+          className="relative flex flex-col justify-between bg-white/90 p-4 shadow-md w-full max-w-lg max-h-[600px] sm:h-[98%] rounded-[10px] z-10">
+          <fieldset className="flex flex-col p-4">
+            <legend className="text-xl text-green-950 font-bold mb-2 text-center sm:text-2xl">
               Select category
             </legend>
             {Object.keys(activitiesData).map((key) => (
@@ -180,7 +175,7 @@ export default function Logger() {
                   checked={selectedCategory === key}
                   onChange={handleCategoryChange}
                 />
-                <label htmlFor={key}>
+                <label htmlFor={key} className="ml-2">
                   {key
                     .replace("-", " ")
                     .replace(/\b\w/g, (c) => c.toUpperCase())}
@@ -189,12 +184,10 @@ export default function Logger() {
             ))}
           </fieldset>
 
-          <div
-            id="activity-container"
-            className="h-[250px] flex flex-col border-t-2 border-gray-300 pl-4 pr-4 pt-8 pd-4 rounded ml-4 mr-4 mt-16 md-4">
+          <div className="flex flex-col border-t-2 border-gray-300 pt-4 mt-4">
             <label
               htmlFor="activity"
-              className="ml-auto mr-auto text-xl text-green-950 font-bold mb-2 sm:text-2xl">
+              className="text-xl text-green-950 font-bold mb-2 text-center sm:text-2xl">
               Select activity
             </label>
             <select
@@ -215,13 +208,13 @@ export default function Logger() {
             </select>
           </div>
 
-          <button className="block bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full sm:w-1/3">
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-1/2 mx-auto mt-3 sm:w-1/3">
             Submit activity
           </button>
         </form>
 
         {userLogs.length > 0 && (
-          <div className="relative flex-1 bg-blue/80 p-4 rounded shadow-md">
+          <div className="relative flex-1 bg-blue/80 p-4 rounded shadow-md w-full max-w-lg max-h-[600px] sm:h-[98%] overflow-hidden z-10">
             <h2 className="text-xl font-bold text-green-900 mb-4 text-center">
               My Logs
             </h2>
@@ -233,7 +226,6 @@ export default function Logger() {
               kg CO₂
             </p>
 
-            {/* Scrollable container */}
             <div className="border-y h-[500px] overflow-y-auto flex flex-col space-y-2">
               {userLogs.map((log, index) => (
                 <div
