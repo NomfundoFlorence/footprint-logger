@@ -139,6 +139,21 @@ app.post("/logger", authenticate, async (req, res) => {
   }
 });
 
+app.get("/user-logs", authenticate, async (req, res) => {
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const result = await collection.find({ userId: req.user.userId }).toArray();
+
+    res.status(200).json({ message: "Logs retrieved successfully!", result });
+  } catch (err) {
+    console.error("Server error: ", err);
+    res.status(500).json({ message: "could not fetch data: ", err });
+  }
+});
+
 app.get("/users-average", async (req, res) => {
   try {
     await connectDatabase();

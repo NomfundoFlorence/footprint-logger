@@ -7,12 +7,39 @@ export default function Dashboard() {
 
   const [leaderboard, setLeaderboard] = useState([]);
   const [usersAverage, setUsersAverage] = useState([]);
+  const [userLogs, setUserLogs] = useState([]);
   const [loading, setLoading] = useState(false);
 
   function handleLogout() {
     setTimeout(() => {
       navigate("/login");
     }, 2000);
+  }
+
+  function getUserLogs() {
+    const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
+    const token = localStorage.getItem("authToken");
+
+    const headers = {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : null,
+      },
+    };
+    setLoading(true);
+
+    axios
+      .get(`${BACKEND_URI}/user-logs`, headers)
+      .then((response) => {
+        console.log(response.data);
+        setUserLogs(response.data.result);
+        setUsersAverage([]);
+        setLeaderboard([]);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch user's logs", error);
+        // res.status(500).json({ message: "Failed to fetch user's logs", error });
+      })
+      .finally(() => setLoading(false));
   }
 
   function getUsersAverage() {
@@ -23,11 +50,12 @@ export default function Dashboard() {
       .then((response) => {
         console.log(response.data);
         setUsersAverage(response.data.result);
+        setUserLogs([]);
         setLeaderboard([]);
       })
       .catch((error) => {
         console.error("Failed to fetch users' average", error);
-        res.status(500).json({ message: "Failed to fetch leaderboard", error });
+        // res.status(500).json({ message: "Failed to fetch users' average", error });
       })
       .finally(() => setLoading(false));
   }
@@ -40,11 +68,12 @@ export default function Dashboard() {
       .then((response) => {
         console.log(response.data);
         setLeaderboard(response.data.data);
+        setUserLogs([]);
         setUsersAverage([]);
       })
       .catch((error) => {
         console.error("Failed to fetch leaderboard", error);
-        res.status(500).json({ message: "Failed to fetch leaderboard", error });
+        // res.status(500).json({ message: "Failed to fetch leaderboard", error });
       })
       .finally(() => setLoading(false));
   }
@@ -56,7 +85,9 @@ export default function Dashboard() {
           "firstName"
         )}!`}</div>
         <nav className="flex-1">
-          <div className="flex items-center bg-green-50 h-12 p-4 border-b hover:bg-green-100 cursor-pointer">
+          <div
+            onClick={getUserLogs}
+            className="flex items-center bg-green-50 h-12 p-4 border-b hover:bg-green-100 cursor-pointer">
             <a href="#" className="block text-green-800 hover:text-green-600">
               My summary
             </a>
@@ -125,7 +156,36 @@ export default function Dashboard() {
                 <h2 className="text-2xl font-bold text-green-900 mb-4 my-auto text-center">
                   Average across all users
                 </h2>
-                <p className="text-xl text-green-700 font-semibold text-center">{`${usersAverage[0].averageEmission} kg CO₂`}</p>
+                <p className="text-xl text-green-700 font-semibold text-center">{`${usersAverage[0].averageEmission.toFixed(
+                  2
+                )} kg CO₂`}</p>
+              </div>
+            )}
+
+            {userLogs.length > 0 && (
+              <div className="bg-white/80 p-4 rounded shadow-md w-full min-w-2xl">
+                <div className="flex justify-center">
+                  <h2 className="text-2xl font-bold text-green-900 mb-4 my-auto text-center">
+                    Logs
+                  </h2>
+                </div>
+                <div className="flex flex-col space-y-2">
+                  {userLogs.map((user, index) => (
+                    <div
+                      key={user._id}
+                      className="flex justify-between items-center bg-green-50 p-2 rounded">
+                      <span className="w-6 text-center font-medium">
+                        {index + 1}
+                      </span>
+
+                      <div className="flex justify-between flex-1 ml-4">
+                        <span className="font-medium">{user.category}</span>
+                        <span className="font-medium">{user.activity}</span>
+                        <span>{user.emission} kg CO₂</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
