@@ -157,7 +157,17 @@ export default function Dashboard() {
                   <h2 className="text-xl font-bold text-green-900 mb-4 text-center">
                     My Logs
                   </h2>
-                  <div className="flex flex-col space-y-2">
+                  <p className="text-green-700 font-semibold text-center mb-4">
+                    Total Emissions:{" "}
+                    {userLogs
+                      .reduce(
+                        (sum, log) => sum + parseFloat(log.emission || 0),
+                        0
+                      )
+                      .toFixed(2)}{" "}
+                    kg CO₂{" "}
+                  </p>
+                  <div className="flex flex-col space-y-2 border-t">
                     {userLogs.map((log, index) => (
                       <div
                         key={log._id}
