@@ -1,4 +1,5 @@
 const { client, connectDatabase } = require("../models/db");
+// const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const bcrypt = require("bcrypt");
@@ -26,7 +27,7 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  console.log("I got here");
+  // console.log("I got here");
 
   const { firstName, lastName, email, password } = req.body;
 
@@ -34,6 +35,12 @@ app.post("/signup", async (req, res) => {
     await connectDatabase();
     const db = client.db("footprint_logger");
     const collection = db.collection("users");
+
+    const existingUser = await collection.findOne({ email: email });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
 
     const saltRounds = 10;
     const hashPassword = await bcrypt.hash(password, saltRounds);

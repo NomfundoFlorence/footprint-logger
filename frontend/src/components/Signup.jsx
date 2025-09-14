@@ -5,7 +5,7 @@ export default function Signup() {
   const navigate = useNavigate();
 
   function signup(event) {
-    console.log("I got here front");
+    // console.log("I got here front");
     event.preventDefault();
     const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
     const formData = new FormData(event.target);
@@ -21,10 +21,12 @@ export default function Signup() {
       .post(`${BACKEND_URI}/signup`, data)
       .then((response) => {
         console.log(response.data);
-        console.log("I get here 2")
+        // console.log("I get here 2")
         navigate("/login");
       })
       .catch((error) => {
+        alert("Email already taken. Try logging in.");
+        if (error.response.status === 409) navigate("/login");
         console.error("Failed!", error);
       });
   }
