@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-
 import { Home, Users, Trophy, NotebookPen, LogOut } from "lucide-react";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -100,11 +99,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen">
-      {/* =========================
-          Sidebar (Responsive)
-      ========================== */}
       <div className="w-16 md:w-64 max-w-64 bg-green-50 shadow-md z-10 flex flex-col">
-        {/* Greeting */}
         <div className="p-4 bg-green-700 text-white text-center md:text-left">
           <span className="hidden md:inline text-xl font-bold">
             Hi, {localStorage.getItem("firstName") || "User"}!
@@ -112,9 +107,7 @@ export default function Dashboard() {
           <span className="inline md:hidden font-bold">Hi!</span>
         </div>
 
-        {/* Navigation Menu */}
         <nav className="flex-1">
-          {/* Summary */}
           <div
             onClick={getUserLogs}
             className={`flex items-center h-12 p-4 border-b cursor-pointer hover:bg-green-100 ${
@@ -126,7 +119,6 @@ export default function Dashboard() {
             </span>
           </div>
 
-          {/* Users Average */}
           <div
             onClick={getUsersAverage}
             className={`flex items-center h-12 p-4 cursor-pointer hover:bg-green-100 ${
@@ -138,7 +130,6 @@ export default function Dashboard() {
             </span>
           </div>
 
-          {/* Leaderboard */}
           <div
             onClick={getLeaderboard}
             className={`flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100 ${
@@ -150,7 +141,6 @@ export default function Dashboard() {
             </span>
           </div>
 
-          {/* Logger */}
           <div
             onClick={() => navigate("/logger")}
             className="flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100">
@@ -161,7 +151,6 @@ export default function Dashboard() {
           </div>
         </nav>
 
-        {/* Logout */}
         <button
           onClick={handleLogout}
           className="m-4 mb-16 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded">
@@ -179,14 +168,12 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-green-900 mb-5">Dashboard</h1>
           {loading && <p className="text-white">Loading...</p>}
 
-          {/* User Logs */}
           {userLogs.length > 0 && (
             <div className="bg-white/80 p-4 rounded shadow-md">
               <h1 className="flex text-3xl font-bold text-green-900 mb-4 justify-center">
                 My Emissions
               </h1>
               <div className="flex flex-col xl:flex-row gap-6">
-                {/* Logs list */}
                 <div className="flex-1 bg-white/80 p-4 rounded shadow-md">
                   <h2 className="text-xl font-bold text-green-900 mb-4 text-center">
                     My Logs
@@ -219,7 +206,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Chart */}
                 {chartData && (
                   <div className="flex-1 flex items-center justify-center bg-white/80 p-4 rounded shadow-md">
                     <div className="w-full h-96">
@@ -242,7 +228,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Users Average */}
           {usersAverage.length > 0 && (
             <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto">
               <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
@@ -254,7 +239,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Leaderboard */}
           {leaderboard.length > 0 && (
             <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto">
               <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
