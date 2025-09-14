@@ -14,6 +14,4 @@ const connectDatabase = async () => {
   }
 };
 
-// console.log(mongodb);
-
 module.exports = { client, connectDatabase };

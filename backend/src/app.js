@@ -1,0 +1,237 @@
+const { client, connectDatabase } = require("../models/db");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const express = require("express");
+const bcrypt = require("bcrypt");
+const path = require("path");
+require("dotenv").config();
+const cors = require("cors");
+
+const app = express();
+app.use(cookieParser());
+
+const PORT = 3001;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../public")));
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
+
+app.get("/", async (req, res) => {
+  res.send("Inside the server");
+});
+
+app.post("/signup", async (req, res) => {
+  console.log("I got here");
+
+  const { firstName, lastName, email, password } = req.body;
+
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("users");
+
+    const saltRounds = 10;
+    const hashPassword = await bcrypt.hash(password, saltRounds);
+
+    await collection.insertOne({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: hashPassword,
+    });
+
+    res.status(200).json({ message: "Signed up successfully!" });
+  } catch (error) {
+    console.error("Failed to sign user up", error);
+    res.status(500).json({ message: "Failed to signup", error: error.message });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("users");
+
+    const user = await collection.findOne({ email: email });
+
+    if (user) {
+      const pwdResult = await bcrypt.compare(password, user.password);
+
+      if (!pwdResult) {
+        return res.status(401).send("Invalid credentials!");
+      }
+
+      const payload = {
+        user: {
+          id: user._id.toString(),
+        },
+      };
+
+      const authToken = jwt.sign(payload, JWT_SECRET);
+      const firstName = user.firstName;
+      const userEmail = user.email;
+
+      return res.status(200).json({ authToken, firstName, userEmail });
+    } else {
+      return res.status(404).json("No user found!");
+    }
+  } catch (error) {
+    console.error("Failed to log in", error);
+    res.status(500).send("Failed to log in");
+  }
+});
+
+function authenticate(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  // console.log("I execute 1");
+
+  if (!token) {
+    // console.log("I execute 2");
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  // console.log("I execute 3");
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded.user;
+
+    console.log(req.user);
+
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid or expired token" });
+  }
+}
+
+app.post("/logger", authenticate, async (req, res) => {
+  try {
+    const { email, category, activity, emission } = req.body;
+
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const newEntry = {
+      userId: req.user.id,
+      email: email,
+      category: category,
+      activity: activity,
+      emission: emission,
+    };
+
+    const newLog = await collection.insertOne(newEntry);
+    const postedLog = await collection.findOne({_id: newLog.insertedId})
+
+    res.status(200).json({ message: "Activity logged successfully!", postedLog });
+  } catch (err) {
+    console.error("Failed to submit", err);
+  }
+});
+
+app.get("/user-logs", authenticate, async (req, res) => {
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const result = await collection.find({ userId: req.user.id }).sort({_id: -1}).toArray();
+
+    res.status(200).json({ message: "Logs retrieved successfully!", result });
+  } catch (err) {
+    console.error("Server error: ", err);
+    res.status(500).json({ message: "could not fetch data: ", err });
+  }
+});
+
+app.get("/users-average", async (req, res) => {
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const result = await collection
+      .aggregate([
+        { $addFields: { emissionNum: { $toDouble: "$emission" } } },
+        {
+          $group: {
+            _id: "$userId",
+            totalPerUser: { $sum: "$emissionNum" },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            sumEmissions: { $sum: "$totalPerUser" },
+            numUsers: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            averageEmission: { $divide: ["$sumEmissions", "$numUsers"] },
+          },
+        },
+      ])
+      .toArray();
+
+    // console.log(result[0].averageEmission);
+    res.status(200).json({ message: "Data retrieved successfully!", result });
+  } catch (err) {
+    console.error("Server error: ", err);
+    res.status(500).json({ message: "could not fetch data: ", err });
+  }
+});
+
+app.get("/leaderboard", async (req, res) => {
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("emissions");
+
+    const topTen = await collection
+      .aggregate([
+        {
+          $addFields: {
+            emissionNum: { $toDouble: "$emission" },
+          },
+        },
+        {
+          $group: {
+            _id: "$userId",
+            totalEmissions: { $sum: "$emissionNum" },
+          },
+        },
+        {
+          $sort: { totalEmissions: 1 },
+        },
+        {
+          $limit: 10,
+        },
+      ])
+      .toArray();
+
+    console.log(topTen);
+    res
+      .status(200)
+      .json({ message: "Top 10 retrieved successfully!", data: topTen });
+  } catch (err) {
+    console.error("Could not fetch top 10.");
+    res.status(500).json({ message: "Server error", err });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`server running on http://localhost:${PORT}`);
+});
