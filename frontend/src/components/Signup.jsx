@@ -37,7 +37,7 @@ export default function Signup() {
       <div className="relative flex w-screen h-screen items-center justify-center xl:justify-end xl:pr-10">
         <form
           onSubmit={signup}
-          className="relative flex flex-col w-4/5 bg-green-50 pl-8 pr-8 pt-16 pb-16 sm:w-2/3 lg:w-1/2 xl:w-2/5">
+          className="relative flex flex-col rounded w-4/5 bg-green-50 pl-8 pr-8 pt-16 pb-16 sm:w-2/3 lg:w-1/2 xl:w-2/5">
           <h1 className="ml-auto mr-auto text-xl text-green-950 font-bold mb-5 sm:text-2xl">
             Welcome!
           </h1>
