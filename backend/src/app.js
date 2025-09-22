@@ -105,7 +105,6 @@ function authenticate(req, res, next) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded.user;
-    // console.log((req.user));
 
     next();
   } catch (err) {
@@ -114,8 +113,6 @@ function authenticate(req, res, next) {
 }
 
 app.post("/logger", authenticate, async (req, res) => {
-  // console.log(req.body);
-
   try {
     const { email, category, activity, emission } = req.body;
 
@@ -130,6 +127,7 @@ app.post("/logger", authenticate, async (req, res) => {
       category: category,
       activity: activity,
       emission: emission,
+      date_logged: new Date().toISOString().slice(0, 10),
     };
 
     const newLog = await collection.insertOne(newEntry);
