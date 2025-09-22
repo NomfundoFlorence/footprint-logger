@@ -1,0 +1,54 @@
+name: Code Quality Pipeline
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  # 🧹 Linting
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npm run lint -- --max-warnings=0
+
+  # 🎨 Formatting
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npm run prettier:check
+
+  # 🔒 Security
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npm audit --audit-level=high
+
+  # 🚫 Forbidden Patterns
+  forbidden-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          bad=$(grep -RniE "console\.log|debugger|TODO" src/ || true)
+          if [ -n "$bad" ]; then
+            echo "❌ Forbidden code found:"
+            echo "$bad"
+            exit 1
+          fi
