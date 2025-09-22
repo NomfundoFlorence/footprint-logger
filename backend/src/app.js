@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 require("dotenv").config();
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
 
@@ -234,6 +236,49 @@ app.get("/leaderboard", async (_req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+
+  socket.on("getWeeklyGoals", async () => {
+    try {
+      await connectDatabase();
+      const db = client.db("footprint_logger");
+      const collection = db.collection("emissions");
+
+      const results = await collection
+        .aggregate([
+          { $addFields: { emissionNum: { $toDouble: "$emission" } } },
+          {
+            $group: {
+              _id: "$category",
+              totalEmissions: { $sum: "$emissionNum" },
+            },
+          },
+          { $sort: { totalEmissions: -1 } },
+          { $limit: 1 },
+        ])
+        .toArray();
+
+      socket.emit("weeklyGoalsData", results[0] || null);
+    } catch (err) {
+      console.error("Error fetching weekly goals:", err);
+      socket.emit("weeklyGoalsData", null);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`server running on http://localhost:${PORT}`);
 });

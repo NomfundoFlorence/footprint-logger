@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Home, Users, Trophy, NotebookPen, LogOut } from "lucide-react";
+import { Home, Users, Trophy, NotebookPen, LogOut, Goal } from "lucide-react";
+import { io } from "socket.io-client";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -15,6 +16,9 @@ export default function Dashboard() {
   const [usersAverage, setUsersAverage] = useState([]);
   const [userLogs, setUserLogs] = useState([]);
   const [chartData, setChartData] = useState(null);
+
+  const [weeklyGoal, setWeeklyGoal] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
   const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
@@ -22,6 +26,8 @@ export default function Dashboard() {
   const headers = {
     headers: { Authorization: token ? `Bearer ${token}` : null },
   };
+
+  const socket = io(BACKEND_URI);
 
   function getUserLogs() {
     setActiveTab("summary");
@@ -34,6 +40,7 @@ export default function Dashboard() {
         setUserLogs(logs);
         setLeaderboard([]);
         setUsersAverage([]);
+        setWeeklyGoal(null);
 
         const categoryTotals = logs.reduce((acc, log) => {
           const emission = parseFloat(log.emission) || 0;
@@ -67,6 +74,7 @@ export default function Dashboard() {
         setLeaderboard(response.data.data);
         setUserLogs([]);
         setUsersAverage([]);
+        setWeeklyGoal(null);
       })
       .catch((err) => console.error("Failed to fetch leaderboard", err))
       .finally(() => setLoading(false));
@@ -82,6 +90,7 @@ export default function Dashboard() {
         setUsersAverage(response.data.result);
         setUserLogs([]);
         setLeaderboard([]);
+        setWeeklyGoal(null);
       })
       .catch((err) => console.error("Failed to fetch users' average", err))
       .finally(() => setLoading(false));
@@ -91,6 +100,21 @@ export default function Dashboard() {
     setTimeout(() => {
       navigate("/login");
     }, 1000);
+  }
+
+  function getWeeklyGoals() {
+    setActiveTab("weeklyGoals");
+    setLoading(true);
+
+    socket.emit("getWeeklyGoals");
+
+    socket.once("weeklyGoalsData", (data) => {
+      setWeeklyGoal(data);
+      setUserLogs([]);
+      setLeaderboard([]);
+      setUsersAverage([]);
+      setLoading(false);
+    });
   }
 
   useEffect(() => {
@@ -116,6 +140,17 @@ export default function Dashboard() {
             <Home className="text-green-800" />
             <span className="ml-3 text-green-800 hover:text-green-600 hidden md:inline">
               My summary
+            </span>
+          </div>
+
+          <div
+            onClick={getWeeklyGoals}
+            className={`flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100 ${
+              activeTab === "weeklyGoals" ? "bg-green-200" : "bg-green-50"
+            }`}>
+            <Goal className="text-green-800" />
+            <span className="ml-3 text-green-800 hover:text-green-600 hidden md:inline">
+              Weekly Goals
             </span>
           </div>
 
@@ -259,6 +294,17 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {activeTab === "weeklyGoals" && weeklyGoal && (
+            <div className="bg-white/80 p-6 rounded shadow-md w-full max-w-xl mx-auto">
+              <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
+                Highest Emission Category
+              </h2>
+              <p className="text-xl text-green-700 font-semibold text-center">
+                {weeklyGoal._id} – {weeklyGoal.totalEmissions.toFixed(2)} kg CO₂
+              </p>
             </div>
           )}
         </div>
