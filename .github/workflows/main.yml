@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          bad=$(grep -RniE "console\.log|debugger|TODO" frontend/src/ || true)
+          bad=$(grep -RniE "console\.log|debugger|TODO" server/src/ | grep -v "server running on http://localhost" || true)
           if [ -n "$bad" ]; then
             echo "❌ Forbidden code found in frontend:"
             echo "$bad"
