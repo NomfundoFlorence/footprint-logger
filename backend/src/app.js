@@ -244,6 +244,15 @@ const io = new Server(server, {
   },
 });
 
+const tips = {
+  transportation:
+    "Try cycling twice this week instead of driving to cut ~2kg CO₂",
+  "food-consumption":
+    "Add two plant-based meals this week to lower your footprint",
+  "energy-use": "Switch off unused appliances and save ~1kg CO₂",
+  other: "Consider buying second-hand or reusing items to cut waste",
+};
+
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
@@ -267,7 +276,21 @@ io.on("connection", (socket) => {
         ])
         .toArray();
 
-      socket.emit("weeklyGoalsData", results[0] || null);
+      const topCategory = results[0] || null;
+
+      if (topCategory) {
+        const tip =
+          tips[topCategory._id.toLowerCase()] ||
+          "Great job! Keep making small changes for a big impact.";
+
+        socket.emit("weeklyGoalsData", {
+          category: topCategory._id,
+          totalEmissions: topCategory.totalEmissions,
+          tip,
+        });
+      } else {
+        socket.emit("weeklyGoalsData", null);
+      }
     } catch (err) {
       console.error("Error fetching weekly goals:", err);
       socket.emit("weeklyGoalsData", null);

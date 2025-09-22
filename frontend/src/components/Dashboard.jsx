@@ -297,13 +297,17 @@ export default function Dashboard() {
             </div>
           )}
 
-          {activeTab === "weeklyGoals" && weeklyGoal && (
-            <div className="bg-white/80 p-6 rounded shadow-md w-full max-w-xl mx-auto">
+          {weeklyGoal && (
+            <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto">
               <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
-                Highest Emission Category
+                Weekly Goal
               </h2>
-              <p className="text-xl text-green-700 font-semibold text-center">
-                {weeklyGoal._id} – {weeklyGoal.totalEmissions.toFixed(2)} kg CO₂
+              <p className="text-lg text-green-700 text-center mb-2">
+                Your highest emission comes from <b>{weeklyGoal.category}</b> (
+                {weeklyGoal.totalEmissions.toFixed(2)} kg CO₂).
+              </p>
+              <p className="text-md text-green-800 text-center font-semibold">
+                💡 {weeklyGoal.tip}
               </p>
             </div>
           )}
