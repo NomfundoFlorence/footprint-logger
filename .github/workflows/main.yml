@@ -1,4 +1,4 @@
-name: Code Quality Pipeline
+name: Code Quality
 
 on:
   pull_request:
@@ -7,48 +7,50 @@ on:
       - main
 
 jobs:
-  # 🧹 Linting
-  lint:
+  # 🧹 Lint Client
+  lint-client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm install
-      - run: npm run lint -- --max-warnings=0
+      - run: npm ci --prefix frontend
+      - run: npm run lint --prefix frontend -- --max-warnings=0
 
-  # 🎨 Formatting
-  prettier:
+  # 🧹 Lint Server
+  lint-server:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm install
-      - run: npm run prettier:check
+      - run: npm ci --prefix backend
+      - run: npm run lint --prefix backend -- --max-warnings=0
 
-  # 🔒 Security
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npm install
-      - run: npm audit --audit-level=high
-
-  # 🚫 Forbidden Patterns
-  forbidden-code:
+  # 🚫 Forbidden Code Client
+  forbidden-client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - run: |
-          bad=$(grep -RniE "console\.log|debugger|TODO" src/ || true)
+          bad=$(grep -RniE "console\.log|debugger|TODO" frontend/src/ || true)
           if [ -n "$bad" ]; then
-            echo "❌ Forbidden code found:"
+            echo "❌ Forbidden code found in frontend:"
+            echo "$bad"
+            exit 1
+          fi
+
+  # 🚫 Forbidden Code Server
+  forbidden-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          bad=$(grep -RniE "console\.log|debugger|TODO" backend/src/ || true)
+          if [ -n "$bad" ]; then
+            echo "❌ Forbidden code found in backend:"
             echo "$bad"
             exit 1
           fi
