@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [chartData, setChartData] = useState(null);
 
   const [weeklyGoal, setWeeklyGoal] = useState(null);
+  const [goalStatus, setGoalStatus] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -115,6 +116,42 @@ export default function Dashboard() {
       setUsersAverage([]);
       setLoading(false);
     });
+  }
+
+  function setGoal(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    const data = {
+      category: formData.get("weekly-category"),
+      goal: Number(formData.get("weekly-goal")),
+    };
+
+    axios
+      .post(`${BACKEND_URI}/weekly-goals`, data, headers)
+      .then((response) => {
+        setGoalStatus("Weekly goal set successfully!");
+
+        // disappear after 1 second
+        setTimeout(() => {
+          setGoalStatus("");
+          event.target.reset();
+        }, 1200);
+      })
+      .catch((err) => {
+        if (err.response && err.response.status === 403) {
+          setGoalStatus(err.response.data.message);
+        } else {
+          setGoalStatus("Failed to set goal.");
+        }
+
+        setTimeout(() => {
+          setGoalStatus("");
+          event.target.reset();
+        }, 1200);
+
+        console.error("Failed to set goal:", err.response?.data || err);
+      });
   }
 
   useEffect(() => {
@@ -298,17 +335,61 @@ export default function Dashboard() {
           )}
 
           {weeklyGoal && (
-            <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto">
-              <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
-                Weekly Goal
-              </h2>
-              <p className="text-lg text-green-700 text-center mb-2">
-                Your highest emission comes from <b>{weeklyGoal.category}</b> (
-                {weeklyGoal.totalEmissions.toFixed(2)} kg CO₂).
-              </p>
-              <p className="text-md text-green-800 text-center font-semibold">
-                💡 {weeklyGoal.tip}
-              </p>
+            <div>
+              <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto">
+                <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
+                  Weekly Tip
+                </h2>
+                <p className="text-lg text-green-700 text-center mb-2">
+                  Your highest emission comes from <b>{weeklyGoal.category}</b>{" "}
+                  ({weeklyGoal.totalEmissions.toFixed(2)} kg CO₂).
+                </p>
+                <p className="text-md text-green-800 text-center font-semibold">
+                  💡 {weeklyGoal.tip}
+                </p>
+              </div>
+              <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto py-sm mt-2">
+                <h1 className="text-2xl font-bold text-green-900 mb-4 text-center">
+                  CO₂ Reduction Goal
+                </h1>
+                <div>
+                  <h1>Goal</h1>
+                  <p></p>
+                </div>
+                <form onSubmit={setGoal} className="flex flex-col">
+                  <label htmlFor="weekly-goal">Category:</label>
+                  <select
+                    id="weekly-category"
+                    name="weekly-category"
+                    type="text"
+                    className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
+                    required>
+                    <option value="" disabled selected hidden>
+                      -- select --
+                    </option>
+                    <option value="energy-use">Energy Use</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="food-consumption">Food Consumption</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <label htmlFor="weekly-goal">Goal:</label>
+                  <input
+                    id="weekly-goal"
+                    name="weekly-goal"
+                    type="number"
+                    min={1}
+                    className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
+                    required
+                  />
+                  {setGoalStatus && (
+                    <p className="text-red-500">{goalStatus}</p>
+                  )}
+
+                  <button className="bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:w-1/3">
+                    Set Goal
+                  </button>
+                </form>
+              </div>
             </div>
           )}
         </div>
