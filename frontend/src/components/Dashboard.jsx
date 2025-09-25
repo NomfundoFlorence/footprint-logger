@@ -166,7 +166,7 @@ export default function Dashboard() {
       .then((response) => {
         // console.log(response.data.goal);
 
-        setLatestGoal(response.data.goal)
+        setLatestGoal(response.data.goal);
 
         setUsersAverage([]);
         setUserLogs([]);
@@ -359,83 +359,84 @@ export default function Dashboard() {
           )}
 
           {weeklyGoal && (
-  <div>
-    {/* Weekly Tip Card */}
-    <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
-        Weekly Tip
-      </h2>
-      <p className="text-lg text-green-700 text-center mb-2">
-        Your highest emission comes from <b>{weeklyGoal.category}</b>{" "}
-        ({weeklyGoal.totalEmissions.toFixed(2)} kg CO₂).
-      </p>
-      <p className="text-md text-green-800 text-center font-semibold">
-        💡 {weeklyGoal.tip}
-      </p>
-    </div>
+            <div>
+              {/* Weekly Tip Card */}
+              <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto">
+                <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
+                  Weekly Tip
+                </h2>
+                <p className="text-lg text-green-700 text-center mb-2">
+                  Your highest emission comes from <b>{weeklyGoal.category}</b>{" "}
+                  ({weeklyGoal.totalEmissions.toFixed(2)} kg CO₂).
+                </p>
+                <p className="text-md text-green-800 text-center font-semibold">
+                  💡 {weeklyGoal.tip}
+                </p>
+              </div>
 
-    {/* ✅ Latest Goal Display */}
-    {latestGoal ? (
-      <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto mt-2">
-        <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
-          Your Current Weekly Goal
-        </h2>
-        <p className="text-lg text-green-700 text-center">
-          <strong>Category:</strong> {latestGoal.category}
-        </p>
-        <p className="text-lg text-green-700 text-center">
-          <strong>Goal:</strong> {latestGoal.goal} kg CO₂
-        </p>
-        <p className="text-sm text-gray-600 text-center">
-          Set on {new Date(latestGoal.createdAt).toLocaleDateString()}
-        </p>
-      </div>
-    ) : (
-      <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto mt-2">
-        <p className="text-gray-500 text-center">No weekly goal set yet.</p>
-      </div>
-    )}
+              {/* ✅ Latest Goal Display */}
+              {latestGoal ? (
+                <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto mt-2">
+                  <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">
+                    Your Current Weekly Goal
+                  </h2>
+                  <p className="text-lg text-green-700 text-center">
+                    <strong>Category:</strong> {latestGoal.category}
+                  </p>
+                  <p className="text-lg text-green-700 text-center">
+                    <strong>Goal:</strong> {latestGoal.goal} kg CO₂
+                  </p>
+                  <p className="text-sm text-gray-600 text-center">
+                    Set on {new Date(latestGoal.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto mt-2">
+                  <p className="text-gray-500 text-center">
+                    No weekly goal set yet.
+                  </p>
+                </div>
+              )}
 
-    {/* Form to Set Goal */}
-    <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto py-sm mt-2">
-      <h1 className="text-2xl font-bold text-green-900 mb-4 text-center">
-        CO₂ Reduction Goal
-      </h1>
-      <form onSubmit={setGoal} className="flex flex-col">
-        <label htmlFor="weekly-goal">Category:</label>
-        <select
-          id="weekly-category"
-          name="weekly-category"
-          className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
-          required>
-          <option value="" disabled selected hidden>
-            -- select --
-          </option>
-          <option value="energy-use">Energy Use</option>
-          <option value="transportation">Transportation</option>
-          <option value="food-consumption">Food Consumption</option>
-          <option value="other">Other</option>
-        </select>
-        <label htmlFor="weekly-goal">Goal:</label>
-        <input
-          id="weekly-goal"
-          name="weekly-goal"
-          type="number"
-          min={1}
-          className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
-          required
-        />
-        {goalStatus && (
-          <p className="text-red-500 text-center">{goalStatus}</p>
-        )}
-        <button className="bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:w-1/3">
-          Set Goal
-        </button>
-      </form>
-    </div>
-  </div>
-)}
-
+              {/* Form to Set Goal */}
+              <div className="bg-white/80 p-4 rounded shadow-md w-full max-w-xl mx-auto py-sm mt-2">
+                <h1 className="text-2xl font-bold text-green-900 mb-4 text-center">
+                  CO₂ Reduction Goal
+                </h1>
+                <form onSubmit={setGoal} className="flex flex-col">
+                  <label htmlFor="weekly-goal">Category:</label>
+                  <select
+                    id="weekly-category"
+                    name="weekly-category"
+                    className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
+                    required>
+                    <option value="" disabled selected hidden>
+                      -- select --
+                    </option>
+                    <option value="energy-use">Energy Use</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="food-consumption">Food Consumption</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <label htmlFor="weekly-goal">Goal:</label>
+                  <input
+                    id="weekly-goal"
+                    name="weekly-goal"
+                    type="number"
+                    min={1}
+                    className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
+                    required
+                  />
+                  {goalStatus && (
+                    <p className="text-red-500 text-center">{goalStatus}</p>
+                  )}
+                  <button className="bg-blue-500 w-2/4 ml-auto mr-auto mt-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:w-1/3">
+                    Set Goal
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
