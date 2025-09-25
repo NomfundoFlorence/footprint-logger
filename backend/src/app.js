@@ -1,7 +1,6 @@
 const { client, connectDatabase } = require("../models/db");
 const jwt = require("jsonwebtoken");
 const express = require("express");
-const bcrypt = require("bcrypt");
 const path = require("path");
 require("dotenv").config();
 const cors = require("cors");
@@ -16,7 +15,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "../public")));
+// app.use(express.static(path.join(__dirname, "../public")));
 
 app.use(
   cors({

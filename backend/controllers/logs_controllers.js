@@ -1,12 +1,5 @@
 const { client, connectDatabase } = require("../models/db");
-const jwt = require("jsonwebtoken");
-const express = require("express");
-const bcrypt = require("bcrypt");
-const path = require("path");
 require("dotenv").config();
-const cors = require("cors");
-const http = require("http");
-const { Server } = require("socket.io");
 
 const logger = async (req, res) => {
   try {

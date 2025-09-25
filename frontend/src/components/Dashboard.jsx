@@ -16,12 +16,10 @@ export default function Dashboard() {
   const [usersAverage, setUsersAverage] = useState([]);
   const [userLogs, setUserLogs] = useState([]);
   const [chartData, setChartData] = useState(null);
-
   const [weeklyGoal, setWeeklyGoal] = useState(null);
   const [goalStatus, setGoalStatus] = useState("");
   const [latestGoal, setLatestGoal] = useState(null);
   const [showForm, setShowForm] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
   const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
@@ -32,7 +30,6 @@ export default function Dashboard() {
 
   const socket = io(BACKEND_URI, { auth: { token } });
 
-  /** ------------------ Data Fetchers ------------------ **/
   function getUserLogs() {
     setActiveTab("summary");
     setLoading(true);
@@ -124,7 +121,6 @@ export default function Dashboard() {
       .catch((err) => console.error("Failed to fetch user's goals", err));
   }
 
-  /** ------------------ Goal Handling ------------------ **/
   function setGoal(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -156,7 +152,6 @@ export default function Dashboard() {
       });
   }
 
-  /** ------------------ Auth ------------------ **/
   function handleLogout() {
     setTimeout(() => {
       navigate("/login");
@@ -168,7 +163,6 @@ export default function Dashboard() {
     fetchLatestGoal();
   }, []);
 
-  /** ------------------ Render ------------------ **/
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -194,7 +188,7 @@ export default function Dashboard() {
 
           <div
             onClick={getWeeklyGoals}
-            className={`flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100 ${
+            className={`flex items-center h-12 p-4 border-b cursor-pointer hover:bg-green-100 ${
               activeTab === "weeklyGoals" ? "bg-green-200" : "bg-green-50"
             }`}>
             <Goal className="text-green-800" />
@@ -251,7 +245,6 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-green-900 mb-5">Dashboard</h1>
           {loading && <p className="text-white">Loading...</p>}
 
-          {/* ------------------ Tabs ------------------ */}
           {activeTab === "summary" && (
             <div className="bg-white/80 p-4 rounded shadow-md">
               <h1 className="flex text-3xl font-bold text-green-900 mb-4 justify-center">

@@ -1,13 +1,5 @@
 const { client, connectDatabase } = require("../models/db");
-const jwt = require("jsonwebtoken");
-const express = require("express");
-const bcrypt = require("bcrypt");
-const path = require("path");
 require("dotenv").config();
-const cors = require("cors");
-const http = require("http");
-const { Server } = require("socket.io");
-const userRoutes = require("../routes/user_routes");
 
 const weeklyGoalSetter = async (req, res) => {
   try {
@@ -52,7 +44,7 @@ const weeklyGoalSetter = async (req, res) => {
       createdAt: new Date(),
     };
 
-    const result = await collection.insertOne(newGoal);
+    await collection.insertOne(newGoal);
 
     res.status(200).json({
       message: "Weekly goal set successfully!",
