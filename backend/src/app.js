@@ -291,6 +291,32 @@ app.post("/weekly-goals", authenticate, async (req, res) => {
   }
 });
 
+app.get("/weekly-goals", authenticate, async (req, res) => {
+  try {
+    await connectDatabase();
+    const db = client.db("footprint_logger");
+    const collection = db.collection("weekly_goals");
+
+    const latestGoal = await collection
+      .find({ userId: req.user.id })
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .toArray();
+
+    if (latestGoal.length === 0) {
+      return res.status(404).json({ message: "No weekly goal set yet" });
+    }
+
+    res.status(200).json({
+      message: "Weekly goal retrieved successfully!",
+      goal: latestGoal[0],
+    });
+  } catch (err) {
+    console.error("Failed to fetch weekly goal", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
