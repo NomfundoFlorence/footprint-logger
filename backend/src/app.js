@@ -308,6 +308,22 @@ const tips = {
   other: "Consider buying second-hand or reusing items to cut waste",
 };
 
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+
+  if (!token) {
+    return next(new Error("Authentication error: No token provided"));
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    socket.user = decoded.user; // attach user info
+    next();
+  } catch (err) {
+    next(new Error("Authentication error: Invalid token"));
+  }
+});
+
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
@@ -319,6 +335,7 @@ io.on("connection", (socket) => {
 
       const results = await collection
         .aggregate([
+          { $match: { userId: socket.user.id } },
           { $addFields: { emissionNum: { $toDouble: "$emission" } } },
           {
             $group: {

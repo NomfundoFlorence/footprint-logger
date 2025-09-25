@@ -28,7 +28,11 @@ export default function Dashboard() {
     headers: { Authorization: token ? `Bearer ${token}` : null },
   };
 
-  const socket = io(BACKEND_URI);
+  const socket = io(BACKEND_URI, {
+    auth: {
+      token, // or wherever you store it
+    },
+  });
 
   function getUserLogs() {
     setActiveTab("summary");
