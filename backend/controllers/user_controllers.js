@@ -50,7 +50,9 @@ const login = async (req, res) => {
       const pwdResult = await bcrypt.compare(password, user.password);
 
       if (!pwdResult) {
-        return res.status(401).send("Invalid credentials!");
+        return res
+          .status(401)
+          .send({ message: "Invalid credentials. Try again" });
       }
 
       const payload = {
@@ -64,9 +66,11 @@ const login = async (req, res) => {
       const firstName = user.firstName;
       const userEmail = user.email;
 
-      return res.status(200).json({ authToken, firstName, userEmail });
+      return res.status(200).json({ authToken, firstName, userEmail, message: "You will be redirected soon..." });
     } else {
-      return res.status(404).json("No user found!");
+      return res
+        .status(404)
+        .json({ message: "Invalid credentials. Try again" });
     }
   } catch (error) {
     console.error("Failed to log in", error);
