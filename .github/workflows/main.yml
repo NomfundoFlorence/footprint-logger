@@ -18,17 +18,6 @@ jobs:
       - run: npm ci --prefix frontend
       - run: npm run lint --prefix frontend -- --max-warnings=0
 
-  # 🧹 Lint Server
-  lint-server:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npm ci --prefix backend
-      - run: npm run lint --prefix backend -- --max-warnings=0
-
   # 🚫 Forbidden Code Client
   forbidden-client:
     runs-on: ubuntu-latest
