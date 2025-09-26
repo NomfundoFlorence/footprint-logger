@@ -15,13 +15,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(express.static(path.join(__dirname, "../public")));
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-  })
-);
+app.use(cors());
 
 app.use("/", userRoutes);
 
@@ -63,7 +58,7 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);// grep-ignore
+  console.log("Client connected:", socket.id); // grep-ignore
 
   socket.on("getWeeklyGoals", async () => {
     try {
@@ -74,7 +69,7 @@ io.on("connection", (socket) => {
       const results = await collection
         .aggregate([
           { $match: { userId: socket.user.id } },
-          { $addFields: { emissionNum: { $toDouble: "$emission" } } },// grep-ignore
+          { $addFields: { emissionNum: { $toDouble: "$emission" } } }, // grep-ignore
           {
             $group: {
               _id: "$category",
@@ -108,7 +103,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);// grep-ignore
+    console.log("Client disconnected:", socket.id); // grep-ignore
   });
 });
 
