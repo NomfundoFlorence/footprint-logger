@@ -63,8 +63,7 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  // eslint-disable-next-line no-console
-  console.log("Client connected:", socket.id);
+  console.log("Client connected:", socket.id);// grep-ignore
 
   socket.on("getWeeklyGoals", async () => {
     try {
@@ -109,8 +108,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // eslint-disable-next-line no-console
-    console.log("Client disconnected:", socket.id);
+    console.log("Client disconnected:", socket.id);// grep-ignore
   });
 });
 
