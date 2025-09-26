@@ -147,7 +147,7 @@ export default function Logger() {
           </div>
           <div
             onClick={handleLogout}
-            className="flex items-center h-full p-4 cursor-pointer hover:bg-green-600 justify-center md:justify-start border-l border-green-600">
+            className="flex items-center h-full p-4 cursor-pointer hover:bg-red-600 justify-center md:justify-start border-l border-green-600">
             <LogOut className="text-green-50" />
             <span className="ml-3 text-green-50 hidden md:inline">Logout</span>
           </div>
