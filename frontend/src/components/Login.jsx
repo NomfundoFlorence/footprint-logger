@@ -1,8 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
+
+  const [invalidStatus, setInvalidStatus] = useState("");
+  const [validStatus, setValidStatus] = useState("");
 
   function login(event) {
     event.preventDefault();
@@ -22,14 +26,22 @@ export default function Login() {
         localStorage.setItem("userEmail", response.data.userEmail);
 
         if (response.status === 200) {
-          navigate("/dashboard");
+          setValidStatus(response.data.message);
+
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 2000);
         }
       })
       .catch((err) => {
         if (err.response) {
           console.error("Failed to log in:", err.response.data);
           if (err.response.status === 401 || err.response.status === 404) {
-            alert("Invalid credentials");
+            setInvalidStatus(err.response.data.message);
+            
+            setTimeout(() => {
+              setInvalidStatus("");
+            }, 1500);
           }
         } else {
           console.error("Failed to log in:", err.message);
@@ -66,6 +78,13 @@ export default function Login() {
             className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
             required
           />
+
+          <p className="text-green-500 font-semibold">
+            {validStatus && validStatus}
+          </p>
+          <p className="text-red-500 font-semibold">
+            {invalidStatus && invalidStatus}
+          </p>
 
           <button
             type="submit"

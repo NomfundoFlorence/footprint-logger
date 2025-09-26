@@ -117,6 +117,7 @@ export default function Logger() {
 
   useEffect(() => {
     getUserLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function getUserLogs() {
@@ -147,7 +148,7 @@ export default function Logger() {
           </div>
           <div
             onClick={handleLogout}
-            className="flex items-center h-full p-4 cursor-pointer hover:bg-green-600 justify-center md:justify-start border-l border-green-600">
+            className="flex items-center h-full p-4 cursor-pointer hover:bg-red-600 justify-center md:justify-start border-l border-green-600">
             <LogOut className="text-green-50" />
             <span className="ml-3 text-green-50 hidden md:inline">Logout</span>
           </div>
@@ -215,10 +216,10 @@ export default function Logger() {
 
         {userLogs.length > 0 && (
           <div className="relative flex-1 bg-blue/80 p-4 rounded shadow-md w-full max-w-lg max-h-[600px] sm:h-[98%] overflow-hidden z-10">
-            <h2 className="text-xl font-bold text-green-900 mb-4 text-center">
+            <h2 className="text-xl font-bold text-green-900 mb-2 text-center">
               My Logs
             </h2>
-            <p className="text-green-700 font-semibold text-center mb-4">
+            <p className="text-green-700 font-semibold text-center mb-2">
               Total Emissions:{" "}
               {userLogs
                 .reduce((sum, log) => sum + parseFloat(log.emission || 0), 0)
@@ -226,7 +227,7 @@ export default function Logger() {
               kg CO₂
             </p>
 
-            <div className="border-y h-[500px] overflow-y-auto flex flex-col space-y-2">
+            <div className="border-y h-[480px] overflow-y-auto flex flex-col space-y-2">
               {userLogs.map((log, index) => (
                 <div
                   key={log._id}
