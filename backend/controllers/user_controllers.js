@@ -16,7 +16,7 @@ const signup = async (req, res) => {
     const existingUser = await collection.findOne({ email: email });
 
     if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
+      return res.status(409).json({ message: "Email already taken. Try logging in" });
     }
 
     const saltRounds = 10;
@@ -29,7 +29,7 @@ const signup = async (req, res) => {
       password: hashPassword,
     });
 
-    res.status(200).json({ message: "Signed up successfully!" });
+    res.status(200).json({ message: "Signed up successfully! Redirecting..." });
   } catch (error) {
     console.error("Failed to sign user up", error);
     res.status(500).json({ message: "Failed to signup", error: error.message });

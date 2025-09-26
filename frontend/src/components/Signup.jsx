@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [validStatus, setValidStatus] = useState("");
+  const [invalidStatus, setInValidStatus] = useState("");
 
   function signup(event) {
     event.preventDefault();
@@ -18,12 +21,22 @@ export default function Signup() {
 
     axios
       .post(`${BACKEND_URI}/signup`, data)
-      .then(() => {
-        navigate("/login");
+      .then((response) => {
+        if (response.status === 200) {
+          setValidStatus(response.data.message);
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        }
       })
       .catch((error) => {
-        alert("Email already taken. Try logging in.");
-        if (error.response.status === 409) navigate("/login");
+        if (error.response.status === 409) {
+          setInValidStatus(error.response.data.message);
+
+          setTimeout(() => {
+            setInValidStatus("");
+          }, 2500);
+        }
         console.error("Failed!", error);
       });
   }
@@ -74,6 +87,13 @@ export default function Signup() {
             className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
             required
           />
+
+          <p className="text-green-500 font-semibold">
+            {validStatus && validStatus}
+          </p>
+          <p className="text-red-500 font-semibold">
+            {invalidStatus && invalidStatus}
+          </p>
 
           <button
             type="submit"
