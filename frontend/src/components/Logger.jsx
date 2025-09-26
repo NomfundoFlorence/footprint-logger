@@ -227,7 +227,7 @@ export default function Logger() {
               kg CO₂
             </p>
 
-            <div className="border-y h-[480px] overflow-y-auto flex flex-col space-y-2">
+            <div className="border-y border-gray-300 h-[480px] overflow-y-auto flex flex-col space-y-2">
               {userLogs.map((log, index) => (
                 <div
                   key={log._id}

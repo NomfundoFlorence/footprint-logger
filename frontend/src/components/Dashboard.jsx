@@ -178,7 +178,7 @@ export default function Dashboard() {
         <nav className="flex-1">
           <div
             onClick={getUserLogs}
-            className={`flex items-center h-12 p-4 border-b cursor-pointer hover:bg-green-100 ${
+            className={`flex items-center h-12 p-4 border-b border-gray-200 cursor-pointer hover:bg-green-100 ${
               activeTab === "summary" ? "bg-green-200" : "bg-green-50"
             }`}>
             <Home className="text-green-800" />
@@ -189,7 +189,7 @@ export default function Dashboard() {
 
           <div
             onClick={getWeeklyGoals}
-            className={`flex items-center h-12 p-4 border-b cursor-pointer hover:bg-green-100 ${
+            className={`flex items-center h-12 p-4 border-b border-gray-200 cursor-pointer hover:bg-green-100 ${
               activeTab === "weeklyGoals" ? "bg-green-200" : "bg-green-50"
             }`}>
             <Goal className="text-green-800" />
@@ -211,7 +211,7 @@ export default function Dashboard() {
 
           <div
             onClick={getLeaderboard}
-            className={`flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100 ${
+            className={`flex items-center h-12 p-4 border-t border-gray-200 cursor-pointer hover:bg-green-100 ${
               activeTab === "leaderboard" ? "bg-green-200" : "bg-green-50"
             }`}>
             <Trophy className="text-green-800" />
@@ -222,7 +222,7 @@ export default function Dashboard() {
 
           <div
             onClick={() => navigate("/logger")}
-            className="flex items-center h-12 p-4 border-t cursor-pointer hover:bg-green-100">
+            className="flex items-center h-12 p-4 border-t border-gray-200 cursor-pointer hover:bg-green-100">
             <NotebookPen className="text-green-800" />
             <span className="ml-3 hidden md:inline text-green-800">
               Return to Logger
@@ -232,7 +232,7 @@ export default function Dashboard() {
 
         <button
           onClick={handleLogout}
-          className="m-4 mb-16 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded">
+          className="m-4 mb-16 flex cursor-pointer items-center justify-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded">
           <LogOut className="text-white" />
           <span className="ml-2 hidden md:inline">Logout</span>
         </button>
@@ -266,7 +266,7 @@ export default function Dashboard() {
                       .toFixed(2)}{" "}
                     kg CO₂
                   </p>
-                  <div className="flex flex-col space-y-2 border-y h-[375px] overflow-y-auto">
+                  <div className="flex flex-col space-y-2 border-y border-gray-300 h-[375px] overflow-y-auto">
                     {userLogs.map((log, index) => (
                       <div
                         key={log._id}
@@ -408,7 +408,7 @@ export default function Dashboard() {
                     <select
                       id="weekly-category"
                       name="weekly-category"
-                      className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
+                      className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-gray-200 border-green-500"
                       required>
                       <option value="" disabled selected hidden>
                         -- select --
@@ -425,7 +425,7 @@ export default function Dashboard() {
                       name="weekly-goal"
                       type="number"
                       min={1}
-                      className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-green-500"
+                      className="bg-green-200 mb-5 h-9 hover:bg-green-300 border-b border-gray-200 border-green-500"
                       required
                     />
 
