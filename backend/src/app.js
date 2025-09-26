@@ -63,6 +63,7 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
+  // eslint-disable-next-line no-console
   console.log("Client connected:", socket.id);
 
   socket.on("getWeeklyGoals", async () => {
@@ -74,7 +75,7 @@ io.on("connection", (socket) => {
       const results = await collection
         .aggregate([
           { $match: { userId: socket.user.id } },
-          { $addFields: { emissionNum: { $toDouble: "$emission" } } },
+          { $addFields: { emissionNum: { $toDouble: "$emission" } } },// grep-ignore
           {
             $group: {
               _id: "$category",
@@ -108,6 +109,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    // eslint-disable-next-line no-console
     console.log("Client disconnected:", socket.id);
   });
 });
