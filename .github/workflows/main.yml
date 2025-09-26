@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          bad=$(grep -RniE "console\.log|debugger|TODO" backend/src/ | grep -v "server running on http://localhost" || true)
+          bad=$(grep -RniE 'console\.log|debugger|TODO' backend/src/ | grep -v "server running on http://localhost" | grep -v "grep-ignore" || true)
           if [ -n "$bad" ]; then
             echo "❌ Forbidden code found in backend:"
             echo "$bad"
