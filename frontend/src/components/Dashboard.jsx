@@ -154,7 +154,7 @@ export default function Dashboard() {
 
   function handleLogout() {
     setTimeout(() => {
-      navigate("/login");
+      navigate("/");
     }, 1000);
   }
 

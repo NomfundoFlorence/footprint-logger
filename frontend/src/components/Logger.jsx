@@ -89,7 +89,7 @@ export default function Logger() {
       .catch((err) => {
         if (err.response?.status === 401) {
           alert("Log in to use the application.");
-          navigate("/login");
+          navigate("/");
         } else {
           alert("Server Error", err);
         }
@@ -102,7 +102,7 @@ export default function Logger() {
     localStorage.removeItem("firstName");
 
     setTimeout(() => {
-      navigate("/login");
+      navigate("/");
     }, 2000);
   }
 
