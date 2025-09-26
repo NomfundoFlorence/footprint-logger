@@ -117,6 +117,7 @@ export default function Logger() {
 
   useEffect(() => {
     getUserLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function getUserLogs() {
